@@ -59,7 +59,7 @@ Write your intro here.
 La sicurezza informatica è un argomento di crescente importanza
 nel mondo moderno. Con il passare del tempo,
 i sistemi di protezione sono diventati sempre più sofisticati
-e potenti ma allo stesso tempo anche gli hackers 
+e potenti ma, allo stesso tempo, anche gli hackers 
 hanno sviluppato tecniche sempre più avanzate per eludere i sistemi di protezione.
 Tra queste vi è sicuramente l'uso 
 dei \acrfull{C&C} servers. I \acrshort{C&C} sono dei server che manipolano
@@ -83,9 +83,18 @@ generati in modo pseudo casuale per nascondere i loro server chiamati
 
 I suggest referencing stuff as follows: \cref{fig:DGA example} or \Cref{fig:DGA example}
 
-I \acrshort{DGA} sono algoritmi che generano domini in modo pseudo casuale.
+I \acrshort{DGA} sono algoritmi che generano migliaia di domini in modo pseudo casuale.
 Prima viene scelto un seed, di solito la data odierna
-o le previsioni meteo \cite{8621875}
+o anche le previsioni meteo \cite{8621875} e, tramite
+un algoritmo di hashing, vengono generati i domini.
+Questi domini vengono poi utilizzati per contattare i server \acrshort{C&C}.
+Non tutti i domini generati però sono registrati.
+Il computer infetto, tramite i DNS locali, cercherà di tradurre
+un dominio in un indirizzo IP.
+Se non riesce a contattarlo con un determinato dominio,
+proverà con il successivo finché non troverà
+un dominio valido che permetterà al malware di comunicare con
+il server \acrshort{C&C}. \cite{8489147}
 In questo modo, diventa più difficile per i sistemi di protezione
 rilevare e bloccare i loro attacchi.
 Si potrebbe pensare di bloccare direttamente i domini tramite
@@ -94,10 +103,21 @@ risulta inefficace poiché vengono generati migliaia di domini
 continuamente. Si pensi che Conficker C, un famoso malware
 che utilizza \acrshort{DGA}, è in grado di generare
 fino a 50.000 domini pseudo casuali al giorno \cite{978131}.
+
 Un altro modo per contrastare ciò
 potrebbe essere quello di fare reverse engineering
 del \acrshort{DGA} per capire quale seed viene utilizzato per generare i domini.
 Questo però risulta lento e dispendioso e possibilmente inefficace. \cite{8887881}
+Per contrastare i \acrshort{DGA}, sono stati sviluppati
+vari metodi di machine learning in grado di rilevare i domini generati.
+Questi metodi hanno due lati poisitivi:
+\begin{itemize}
+    \item Non richiedono un lungo processo di reverse engineering.
+    \item Essendo l'AI una blackbox, è molto difficile
+    per gli hackers eseguire un reverse engineering del modello.
+\end{itemize}
+
+
 
 
 \begin{figure}
@@ -123,7 +143,7 @@ You may also put some code snippet (which is NOT float by default), eg: \cref{ls
 
 \backmatter
 
-\bibliographystyle{plain} %prima era alpha
+\bibliographystyle{IEEEtran} %prima era alpha
 \bibliography{bibliography}
 
 \begin{acknowledgements} % this is optional
