@@ -25,6 +25,7 @@
 \newacronym{DGA}{DGA}{Domain Generation Algorithm}
 \newacronym{C&C}{C\&C}{Command and Control}
 \newacronym{P2P}{P2P}{Peer to Peer}
+\newacronym{IRC}{IRC}{Internet Relay Chat}
 
 
 \mainlinespacing{1.241} % line spacing in mainmatter, comment to default (1)
@@ -124,17 +125,46 @@ La vita di un botnet di solito sono questi:
     \label{fig:botnet}
 \end{figure}
 
-\subsection{C\&C}
+\subsection{Command and Control} 
 
+Il meccanismo del \acrshort{C&C} crea un canale di comunicazione
+tra il botmaster e i bot. Questo è essenziale per il funzionamento
+del botnet. Ci sono tre tipi di server \acrshort{C&C}:
 
+\begin{itemize}
+    \item \textbf{Centralizzati}: In questo tipo di server, il botmaster
+    controlla tutti i bot tramite un server centrale. Questo è il metodo
+    più semplice e veloce per controllare i bot ma è anche il più vulnerabile.
+    Se il server centrale viene bloccato, tutti i bot non possono più
+    ricevere comandi. Questo a sua volta è diviso in due categorie:
+    \begin{itemize}
+        \item \textbf{IRC} : \acrfull{IRC} è un sistema di chat
+        usato per comunicare tra i bot e il botmaster in tempo reale.
+        Questo era più usato nella prima generazione di botnet. 
+        I bot si connettono al server \acrshort{IRC} e aspettano
+        i comandi dal botmaster. I bot seguono un approccio PUSH ovvero
+        quando un bot si connette ad un determinato canale, esso rimane connesso.
+        \item \textbf{HTTP}: Il più usato. Con questa tecnica, i bot usano un URL o IP
+        per contatattare il server \acrshort{C&C}. Qua invece i bot seguono
+        un approccio PULL. I bot si connettono al server \acrshort{C&C}
+        periodicamente e controllano se ci sono nuovi comandi. Questo processo
+        va ad intervalli regolari definiti dal botmaster.
+    \end{itemize}
 
+    \item \textbf{Decentralizzati}: In questo tipo di server, i botmaster
+    controllano i bot tramite più server. Questo rende più difficile
+    bloccare il server ma è anche più complesso da gestire.
 
-% \begin{image}
-%     \centering
-%     \includegraphics[width=.8\linewidth]{figures/Types-of-CC.png}
-%     \caption{Tipi di server \acrshort{C\&C} (a) centralizzati, (b) decentralizzati}
-%     \label{fig:command and control}
-% \end{image}
+    \item \textbf{Ibridi}:
+
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/Types-of-CC.png}
+    \caption{Esempio di server \acrshort{C&C}. (a) centralizzato, (b) decentralizzato (da \cite{6487169})}
+    \label{fig:command and control}
+\end{figure}
 
 
 I \acrshort{DGA} sono algoritmi che generano migliaia di domini in modo pseudo casuale.
