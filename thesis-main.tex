@@ -121,7 +121,7 @@ La vita di un botnet di solito sono questi:
 \begin{figure}
     \centering
     \includegraphics[width=.8\linewidth]{figures/The-Lifecycle-Schema-of-a-typical-Botnet.png}
-    \caption{Ciclo di vita di un botnet (da \cite{Ogu2016})}
+    \caption{Ciclo di vita di un botnet \cite{Ogu2016}}
     \label{fig:botnet}
 \end{figure}
 
@@ -151,20 +151,22 @@ del botnet. Ci sono tre tipi di server \acrshort{C&C}:
         va ad intervalli regolari definiti dal botmaster.
     \end{itemize}
 
-    \item \textbf{Decentralizzati}: In questo tipo di server, i botmaster
-    controllano i bot tramite più server. Questo rende più difficile
-    bloccare il server ma è anche più complesso da gestire.
-
-    \item \textbf{Ibridi}:
+    \item \textbf{Decentralizzati}: Questo tipo di \acrshort{C&C}
+    è basato su un sistema \acrshort{P2P} senza un server centrale. In questo modo,
+    computer infetti fanno sia da bot che da server \acrshort{C&C}.
+    Questo metodo è più difficile da rilevare ma anche
+    più complesso da implementare \cite{4804459}.
 
 \end{itemize}
 
 \begin{figure}
     \centering
     \includegraphics[width=.8\linewidth]{figures/Types-of-CC.png}
-    \caption{Esempio di server \acrshort{C&C}. (a) centralizzato, (b) decentralizzato (da \cite{6487169})}
+    \caption{Esempio di server \acrshort{C&C}. (a) centralizzato, (b) decentralizzato \cite{6487169}}
     \label{fig:command and control}
 \end{figure}
+
+\subsection{Domain Generation Algorithm}
 
 
 I \acrshort{DGA} sono algoritmi che generano migliaia di domini in modo pseudo casuale.
@@ -201,7 +203,7 @@ Questo però risulta lento e dispendioso e possibilmente inefficace \cite{888788
 \end{figure}
 
 Per contrastare i \acrshort{DGA}, sono stati sviluppati
-vari metodi di machine learning in grado di rilevare i domini generati.
+vari metodi di Machine Learning in grado di rilevare i domini generati.
 Questi metodi hanno due lati poisitivi:
 \begin{itemize}
     \item Non richiedono un lungo processo di reverse engineering.
@@ -209,9 +211,68 @@ Questi metodi hanno due lati poisitivi:
     per gli hackers eseguire un reverse engineering del modello.
 \end{itemize}
 
+\section{Machine Learning}
+Il Machine Learning è una branca dell'informatica che punta
+a far ragionare le macchine come gli esseri umani, ovvero
+a svolgere compiti autonomamente senza essere programmati
+esplicitamente e migliorando le loro prestazioni con l'esperienza
+e i dati.
+Abbiamo vari tipi di Machine Learning:
+\begin{itemize}
+    \item \textbf{Supervised Learning}: È la tecnica più comune
+    per allenare le reti neurali \cite{ayodele2010types}. In questo tipo di apprendimento,
+    il modello viene addestrato su un dataset etichettato. Un esempio
+    di uso di questo tipo di apprendimento è la classificazione
+    di immagini.
+    \item \textbf{Unsupervised Learning}: In questo tipo di apprendimento,
+    il modello, deve scoprire dei pattern o delle relazioni
+    senza avere nessuna etichetta. Il modello deve trovare
+    degli oggetti che condividono delle caratteristiche simili, chiamati
+    cluster
+    \item \textbf{Reinforcement Learning}: In questo tipo di apprendimento,
+    ogni azione ha un effetto nell'ambiente che può essere positivo
+    o negativo.
+\end{itemize}
 
 
 
+
+\subsection{Reti Neurali}
+
+Una \textbf{Rete Neurale} o in inglese \textbf{Artificial Neural Network} (ANN) è il nome
+di una branca dell'intelligenza artificiale che mira a simulare il
+funzionamento del cervello umano \cite{zou2009overview}.
+Il cervello umano è composto da miliardi di neuroni
+che comunicano tra di loro tramite sinapsi.
+Con le reti neurali artificiali, il funzionamento
+è analogo. A livello matematico, un neurone artificiale è composto principalmente
+da tre componenti:
+\begin{itemize}
+    \item \textbf{Pesi}: I pesi sono valori numerici che determinano
+    l'importanza di ogni input. Ogni input ha un peso associato
+    che viene aggiornato durante il processo di apprendimento.
+    \item \textbf{Funzione di attivazione}: La funzione di attivazione
+    è la funzione che determina se un neurone deve essere attivato
+    o meno. Le funzioni di attivazione più comuni sono la funzione
+    sigmoide, la funzione ReLU e la funzione tanh.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/ArtificialNeuronModel.png}
+    \caption{Esempio di neurone artificiale \cite{wiki:xxx}}
+    \label{fig:ANN}
+\end{figure}
+
+\subsection{LSTM}
+
+TODO
+
+\chapter{Progetto}
+\section{Obiettivi}
+Il progetto ha come obiettivo quello di sviluppare un sistema
+di rilevamento di domini generati da \acrshort{DGA} tramite
+l'uso di tecniche di Machine Learning. 
 
 
 \section{Some cool topic}
