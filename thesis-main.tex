@@ -9,7 +9,7 @@
 
 \school{\unibo}
 \programme{Corso di Laurea Triennale in Ingegneria e Scienze Informatiche}
-\title{DGA Domain Generation Algorithm}
+\title{Uso del Machine Learning per bloccare siti DGA}
 \author{Simone Collorà}
 \date{\today}
 \subject{Programmazione a Oggetti}
@@ -51,12 +51,9 @@ Optional. Max a few lines.
 \mainmatter
 
 %----------------------------------------------------------------------------------------
-\chapter{Introduction}
+\chapter{Introduzione}
 \label{chap:introduction}
 %----------------------------------------------------------------------------------------
-
-Write your intro here.
-%\sidenote{Add sidenotes in this way. They are named after the author of the thesis}
 
 La sicurezza informatica è un argomento di crescente importanza
 nel mondo moderno. Con il passare del tempo,
@@ -73,18 +70,25 @@ inserire in modo bruto l'indirizzo IP del server nel codice del malware,
 ma questo metodo è facilmente rilevabile e bloccabile.
 Gli hackers, quindi, preferiscono utilizzare dei domini
 generati in modo pseudo casuale per nascondere i loro server chiamati
-\acrfull{DGA} servers.
+\acrfull{DGA} servers. Negli ultimi anni, sono stati sviluppati
+vari metodi di Machine Learning per rilevare questi domini.
 
 
 
-\paragraph{Structure of the Thesis}
+\paragraph{Struttura della tesi}
+Il lavoro di tesi si dividerà in 4 capitoli. Nel primo
+capitolo verrano descritti concetti di base riguardanti DNS, \acrshort{DGA} e Botnets,
+e Machine Learning con una breve descrizione delle reti neurali e di alcuni
+algoritmi usati. Nel secondo capitolo verrà descritto il progetto,
+i suoi obiettivi e i risultati ottenuti. Nell'ultimo capitolo
+verranno discusse le conclusioni e i possibili sviluppi futuri.
 
 %\note{At the end, describe the structure of the paper}
 
-\chapter{Uso di Machine Learning e AI per rilevare i DGA}
+\chapter{Uso del Machine Learning per rilevare i DGA}
 
-\section{Botnets e C\&C}
-I suggest referencing stuff as follows: \cref{fig:DGA example} or \Cref{fig:DGA example}
+\section{Botnets e DGA}
+%I suggest referencing stuff as follows: \cref{fig:DGA example} or \Cref{fig:DGA example}
 
 \subsection{Botnets}
 
@@ -248,21 +252,63 @@ Con le reti neurali artificiali, il funzionamento
 è analogo. A livello matematico, un neurone artificiale è composto principalmente
 da tre componenti:
 \begin{itemize}
-    \item \textbf{Pesi}: I pesi sono valori numerici che determinano
-    l'importanza di ogni input. Ogni input ha un peso associato
-    che viene aggiornato durante il processo di apprendimento.
-    \item \textbf{Funzione di attivazione}: La funzione di attivazione
-    è la funzione che determina se un neurone deve essere attivato
-    o meno. Le funzioni di attivazione più comuni sono la funzione
-    sigmoide, la funzione ReLU e la funzione tanh.
+    \item \textbf{Pesi}: I pesi(weight in inglese) sono valori numerici che
+    aiutano ogni nodo della rete neurale a determinare
+    l'importanza di un input. Usando i pesi, il neurone
+    può decidere se un input è importante o meno.
+    \item \textbf{Funzione di attivazione}: la funzione di attivazione del neurone è la funzione
+    che in input prende la sommatoria dei dati pesati con i pesi descritti in
+    precedenza e produce un output che verrà poi inviato ad altri neuroni come
+    input. Alcune delle funzioni di attivazione più comuni sono la funzione
+    sigmoide e la funzione ReLU.
 \end{itemize}
 
 \begin{figure}
     \centering
     \includegraphics[width=.8\linewidth]{figures/ArtificialNeuronModel.png}
     \caption{Esempio di neurone artificiale \cite{wiki:xxx}}
+    \label{fig:AN}
+\end{figure}
+
+A sua volta una rete neurale è composta da vari strati:
+\begin{itemize}
+    \item \textbf{Input Layer}: Questo è il primo strato della rete neurale
+    e quello che riceve l'input esterno. Poiché la rete neurale
+    è un modello matematico, l'input dovrà essere
+    un vettore numerico. Questo vale anche se l'input da esaminare
+    è una stringa di caratteri, come nel nostro caso.
+    \item \textbf{Hidden Layer}: Questo è lo strato intermedio della rete neurale in cui avviene
+    il processo di apprendimento.
+    Questo strato elabora gli input ricevuti dallo strato precedente
+    modificando i pesi. Si possono avere anche più hidden layers
+    \item \textbf{Output Layer}: Questo è l'ultimo strato della rete neurale.
+    Fornisce i risultati finali ottenuti dalla rete neurale. Questo strato
+    può essere composto anche da un solo neurone che fornisce
+    un output binario (0 o 1) come sarà nel nostro caso(DGA o non DGA)
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/MultiLayerNeuralNetwork.png}
+    \caption{Esempio di rete neurale \cite{wiki:001}}
     \label{fig:ANN}
 \end{figure}
+
+Abbiamo inoltre vari tipi di reti neurali:
+\begin{itemize}
+    \item \textbf{Reti Neurali Feedforward}: Una rete Feedforward
+    elabora le informazioni in un solo verso. Non ha né cicli
+    né memoria delle informazioni passate. Questo tipo di rete
+    è usato principalmente per riconoscimento di pattern o classificazioni
+    \item \textbf{Reti Neurali Ricorrenti (RNN)}:
+    A differenza di una rete Feedforward, in una RNN 
+    i neuroni possono andare anche a formare dei cicli. 
+    Questo permette alla rete di avere una specie di memoria
+    e quindi di ricordare le informazioni passate. Usata
+    per esempio per traduzione automatica o riconoscimento vocale.
+    \item \textbf{Reti Neurali Convoluzionali (CNN)}:
+\end{itemize}
+
 
 \subsection{LSTM}
 
@@ -273,6 +319,12 @@ TODO
 Il progetto ha come obiettivo quello di sviluppare un sistema
 di rilevamento di domini generati da \acrshort{DGA} tramite
 l'uso di tecniche di Machine Learning. 
+
+Per il dataset di addestramento ho usato un dataset fornito dall'azienda 
+Flashstart che contiene circa 5600 domini generati da \acrshort{DGA}.
+A questo ho aggiunto un dataset di circa 5600 domini benigni
+presi dal database di Cloudflare aggiornato
+al 12 maggio 2025\cite{cloudflare_domains}
 
 
 \section{Some cool topic}
