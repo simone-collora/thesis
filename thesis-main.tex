@@ -14,8 +14,8 @@
 \date{\today}
 \subject{Programmazione a Oggetti}
 \supervisor{Prof. Mirko Viroli}
-\cosupervisor{Dott. CoSupervisor 1}
-\morecosupervisor{Dott. CoSupervisor 2}
+\cosupervisor{Dott. Gianluca Aguzzi}
+%\morecosupervisor{Dott. CoSupervisor 2}
 \session{I}
 \academicyear{2024-2025}
 
@@ -38,14 +38,12 @@
 Max 2000 characters, strict.
 \end{abstract}
 
-\begin{dedication} % this is optional
-Optional. Max a few lines.
-\end{dedication}
+
 
 %----------------------------------------------------------------------------------------
 \tableofcontents   
 \listoffigures     % (optional) comment if empty
-\lstlistoflistings % (optional) comment if empty
+%\lstlistoflistings  (optional) comment if empty
 %----------------------------------------------------------------------------------------
 
 \mainmatter
@@ -94,7 +92,7 @@ verranno discusse le conclusioni e i possibili sviluppi futuri.
 
 I Botnets sono reti di computer infetti da malware, chiamati bot,
 che possono essere controllati da un attaccante, il botmaster.
-La vita di un botnet di solito sono questi:
+La vita di un botnet nella maggior parte dei casi è divisa in 4 fasi:
 \begin{enumerate}
     \item \textbf{Infezione e propagazione}: Questo è il primo
     passaggio. L'attaccante cerca di infettare un computer
@@ -108,7 +106,7 @@ La vita di un botnet di solito sono questi:
 
     \item \textbf{Commands and Reports}: il malware esegue le istruzioni
     ricevute dal server \acrshort{C&C} e invia i risultati al botmaster.
-    I bots ascoltano i comandi dal server \acrshort{C&C} 
+    I bots ascoltano continuamente il server \acrshort{C&C} 
     o si connettono ad esso periodicamente. Appena ricevono
     un comando lo eseguono, inviano i risultati al botmaster
     e aspettano un nuovo comando.
@@ -202,7 +200,7 @@ Questo però risulta lento e dispendioso e possibilmente inefficace \cite{888788
 \begin{figure}
     \centering
     \includegraphics[width=.8\linewidth]{figures/DGA example.jpg}
-    \caption{esempio del funzionamento di un \acrshort{DGA}}
+    \caption{Esempio del funzionamento di un \acrshort{DGA} \cite{8887881}}
     \label{fig:DGA example}
 \end{figure}
 
@@ -221,38 +219,21 @@ a far ragionare le macchine come gli esseri umani, ovvero
 a svolgere compiti autonomamente senza essere programmati
 esplicitamente e migliorando le loro prestazioni con l'esperienza
 e i dati.
-Abbiamo vari tipi di Machine Learning:
-\begin{itemize}
-    \item \textbf{Supervised Learning}: È la tecnica più comune
-    per allenare le reti neurali \cite{ayodele2010types}. In questo tipo di apprendimento,
-    il modello viene addestrato su un dataset etichettato. Un esempio
-    di uso di questo tipo di apprendimento è la classificazione
-    di immagini.
-    \item \textbf{Unsupervised Learning}: In questo tipo di apprendimento,
-    il modello, deve scoprire dei pattern o delle relazioni
-    senza avere nessuna etichetta. Il modello deve trovare
-    degli oggetti che condividono delle caratteristiche simili, chiamati
-    cluster
-    \item \textbf{Reinforcement Learning}: In questo tipo di apprendimento,
-    ogni azione ha un effetto nell'ambiente che può essere positivo
-    o negativo.
-\end{itemize}
-
 
 
 
 \subsection{Reti Neurali}
 
-Una \textbf{Rete Neurale} o in inglese \textbf{Artificial Neural Network} (ANN) è il nome
-di una branca dell'intelligenza artificiale che mira a simulare il
+Una \textbf{Rete Neurale} o in inglese \textbf{Artificial Neural Network} (ANN) è
+un modello matematico che mira a simulare il
 funzionamento del cervello umano \cite{zou2009overview}.
 Il cervello umano è composto da miliardi di neuroni
 che comunicano tra di loro tramite sinapsi.
 Con le reti neurali artificiali, il funzionamento
 è analogo. A livello matematico, un neurone artificiale è composto principalmente
-da tre componenti:
+da due componenti:
 \begin{itemize}
-    \item \textbf{Pesi}: I pesi(weight in inglese) sono valori numerici che
+    \item \textbf{Pesi}: i pesi(weight in inglese) sono valori numerici che
     aiutano ogni nodo della rete neurale a determinare
     l'importanza di un input. Usando i pesi, il neurone
     può decidere se un input è importante o meno.
@@ -272,12 +253,12 @@ da tre componenti:
 
 A sua volta una rete neurale è composta da vari strati:
 \begin{itemize}
-    \item \textbf{Input Layer}: Questo è il primo strato della rete neurale
+    \item \textbf{Input Layer}: il primo strato della rete neurale
     e quello che riceve l'input esterno. Poiché la rete neurale
     è un modello matematico, l'input dovrà essere
     un vettore numerico. Questo vale anche se l'input da esaminare
     è una stringa di caratteri, come nel nostro caso.
-    \item \textbf{Hidden Layer}: Questo è lo strato intermedio della rete neurale in cui avviene
+    \item \textbf{Hidden Layer}: questo è lo strato intermedio della rete neurale in cui avviene
     il processo di apprendimento.
     Questo strato elabora gli input ricevuti dallo strato precedente
     modificando i pesi. Si possono avere anche più hidden layers
@@ -306,13 +287,67 @@ Abbiamo inoltre vari tipi di reti neurali:
     Questo permette alla rete di avere una specie di memoria
     e quindi di ricordare le informazioni passate. Usata
     per esempio per traduzione automatica o riconoscimento vocale.
-    \item \textbf{Reti Neurali Convoluzionali (CNN)}:
+    \item \textbf{Reti Neurali Convoluzionali (CNN)}: Questo tipo di rete
+    è usato principalmente per dati strutturati a griglia ad esempio le immagini.
+    Il nome "Convoluzionali" deriva dal fatto che la
+    rete usa un'operazione matematica chiamata proprio
+    convoluzione. Le CNN sono usate soprattuto nell'ambito della
+    visione artificiale per il riconoscimento di oggetti
+    \cite{Goodfellow-et-al-2016}.
 \end{itemize}
 
+\subsection{Sviluppo di una rete neurale}
+Il primo passo per sviluppare una rete neurale è quello di
+raccogliere i dati in un dataset. Nel nostro caso, dovendo riconoscere se un dominio
+è lecito o \acrshort{DGA}, il dataset conterrà
+entrambi i tipi di domini che potranno avere un etichetta, DGA o legit nel nostro caso, o no. Questi come detto in precedenza,
+dovranno essere convertiti in un vettore numerico. A seconda di come
+è strutturato il dataset possiamo avere vari tipi di allenamento:
 
-\subsection{LSTM}
+\begin{itemize}
+    \item \textbf{Supervised Learning}: È la tecnica più comune
+    per allenare le reti neurali \cite{ayodele2010types}. In questo tipo di apprendimento,
+    il modello viene addestrato su un dataset etichettato.
+    \item \textbf{Unsupervised Learning}: In questo tipo di apprendimento,
+    il modello, deve scoprire dei pattern o delle relazioni
+    senza avere nessuna etichetta. Il modello deve trovare
+    degli oggetti che condividono delle caratteristiche simili, chiamati
+    cluster
+    \item \textbf{Reinforcement Learning}: In questo tipo di apprendimento,
+    ogni azione ha un effetto nell'ambiente che può essere positivo
+    o negativo.
+\end{itemize}
 
-TODO
+Si è soliti dividere il dataset in tre parti ovvero training set, validation set e test set.
+Il \textbf{training set} è il dataset su cui viene addestrato
+il modello, il \textbf{validation set} è una parte del training set
+utile per riconoscere se il modello è in grado di generalizzare
+su dati nuovi ovvero non va in overfitting o underfitting.
+il \textbf{test set}, invece, è il dataset
+su cui viene testata la precisione del modello.
+Per la divisione del dataset non esiste una regola fissa,
+Successivamente viene deciso il tipo di rete 
+neurale da usare, il numero di layers e il numero
+di neuroni per ognuno di essi. Una rete troppo semplice
+potrebbe non essere in grado di apprendere i pattern
+nei dati (\textbf{Underfitting}), mentre al contrario,
+una rete troppo complessa potrebbe imparare
+troppo bene di dati e non generalizzare su dati nuovi
+(\textbf{Overfitting}). Come detto in precedenza, il validation
+set ci aiuta a capire se il modello va in overfitting o underfitting.
+Successivamente vengono inizializzati i pesi di ogni neurone.
+Questi possono essere inizializzati in modo casuale
+o con altre tecniche più avanzate ad esempio
+la \textbf{He Initialization} \cite{he2015delving}
+(opzione di default quando si inizializza 
+con attivazione ReLU).
+Dopo di che si passa alla fase vera e propria di addestramento.
+Il modello viene iterato per un certo numero di epoche.
+Il numero di epoche è un iperparametro che indica quante volte
+l'algoritmo di apprendimento deve passare attraverso il dataset di training\cite{brownlee2018difference}.
+
+
+
 
 \chapter{Progetto}
 \section{Obiettivi}
@@ -349,5 +384,21 @@ You may also put some code snippet (which is NOT float by default), eg: \cref{ls
 \begin{acknowledgements} % this is optional
 Optional. Max 1 page.
 \end{acknowledgements}
+
+\chapter*{Ringraziamenti}
+\addcontentsline{toc}{chapter}{Ringraziamenti}
+Con questo lavoro di tesi, si conclude il mio percorso di studi
+sicuramente non facile ma che mi ha dato la possibilità di crescere sia
+a livello personale che professionale. \break
+Ringrazio il mio relatore, il Prof. Mirko Viroli e il mio correlatore
+Dott. Gianluca Aguzzi per essere stati sempre disponibili e avermi aiutato con il lavoro e Flashstart
+per avermi dato la possibilità di lavorare su questo progetto. \break
+Ringrazio la mia famiglia per avermi sempre supportato sia moralmente che economicamente. Senza
+di loro non sarei mai riuscito a raggiungere questo traguardo. \break
+Ringrazio i miei amici in particolare l'associazione Sprite che hanno
+reso questo percorso più divertente.
+Ringrazio i bloccati e gli amici di Smash Bros per i momenti di divertimento e avermi dato un hobby per
+staccare dallo studio. \break
+
 
 \end{document}
