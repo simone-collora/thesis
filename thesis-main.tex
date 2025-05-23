@@ -9,7 +9,7 @@
 
 \school{\unibo}
 \programme{Corso di Laurea Triennale in Ingegneria e Scienze Informatiche}
-\title{Uso del Machine Learning per bloccare siti DGA}
+\title{Uso del Machine Learning per rilevare siti web generati da DGA}
 \author{Simone Collorà}
 \date{\today}
 \subject{Programmazione a Oggetti}
@@ -75,7 +75,7 @@ vari metodi di Machine Learning per rilevare questi domini.
 
 \paragraph{Struttura della tesi}
 Il lavoro di tesi si dividerà in 4 capitoli. Nel primo
-capitolo verrano descritti concetti di base riguardanti DNS, \acrshort{DGA} e Botnets,
+capitolo verrano descritti concetti di base riguardanti \acrshort{DGA} e Botnets,
 e Machine Learning con una breve descrizione delle reti neurali e di alcuni
 algoritmi usati. Nel secondo capitolo verrà descritto il progetto,
 i suoi obiettivi e i risultati ottenuti. Nell'ultimo capitolo
@@ -83,7 +83,9 @@ verranno discusse le conclusioni e i possibili sviluppi futuri.
 
 %\note{At the end, describe the structure of the paper}
 
-\chapter{Uso del Machine Learning per rilevare i DGA}
+\chapter{Background}
+
+Di seguito sono descritti i concetti base su cui si basa il progetto.
 
 \section{Botnets e DGA}
 %I suggest referencing stuff as follows: \cref{fig:DGA example} or \Cref{fig:DGA example}
@@ -326,6 +328,9 @@ su dati nuovi ovvero non va in overfitting o underfitting.
 il \textbf{test set}, invece, è il dataset
 su cui viene testata la precisione del modello.
 Per la divisione del dataset non esiste una regola fissa,
+ma solitamente il training set è più grande del validation set
+e del test set. Un esempio potrebbe essere 70\% training set, 15\% validation set
+e 15\% test set.
 Successivamente viene deciso il tipo di rete 
 neurale da usare, il numero di layers e il numero
 di neuroni per ognuno di essi. Una rete troppo semplice
@@ -342,9 +347,51 @@ la \textbf{He Initialization} \cite{he2015delving}
 (opzione di default quando si inizializza 
 con attivazione ReLU).
 Dopo di che si passa alla fase vera e propria di addestramento.
-Il modello viene iterato per un certo numero di epoche.
+Il modello viene iterato per un certo numero di epoche su un batch di dati.
+Un \textbf{batch} è un sottoinsieme del training set dopo il quale il modello
+aggiorna i propri pesi. Ad esempio abbiamo un training set di 10000 dati
+e un batch size di 100. Ogni 100 dati il modello calcolerà
+l'output e la loss function, cioè la funzione che calcola
+la differenza tra l'output previsto e quello reale,
+e aggiornerà i pesi.
 Il numero di epoche è un iperparametro che indica quante volte
 l'algoritmo di apprendimento deve passare attraverso il dataset di training\cite{brownlee2018difference}.
+Infine viene testato il modello sul test set e, se la precisione
+è soddisfacente, il modello potrà essere usato.
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/Machine-learning-pipeline.png}
+    \caption{Pipeline di un modello di Machine Learning \cite{phdthesishamza}}
+    \label{fig:ML pipeline}
+\end{figure}
+
+\section{Algoritmi di Machine Learning adatti al nostro problema}
+
+Ora che abbiamo visto i concetti di base del Machine Learning, delle reti neurali
+e dei \acrshort{DGA}, vediamo alcuni degli algoritmi che possono essere usati
+per rilevare i domini generati da \acrshort{DGA}.
+
+\subsection{Random Forest}
+
+Random Forest è un algoritmo esamble (cioè unisce più modelli) di Machine Learning supervisionato che usa un insieme di alberi decisionali
+per classificare i dati. Un albero decisionale è un modello che usa appunto una struttura ad albero
+per prendere decisioni, come può essere quello in \ref{fig:decision tree}. A seconda di determinate
+caratteristiche, l'albero decide se una persona rischia di avere un attacco cardiaco o meno.
+Random Forest è uno degli algoritmi più usati per la classificazione ma anche per la regressione(nel nostro caso
+classificazione).
+
+
+
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/Decision_tree_for_heart_attack.png}
+    \caption{Esempio di albero decisionale \cite{decision_tree_image}}
+    \label{fig:decision tree}
+\end{figure}
+
+\subsection{Long Short Term Memory (LSTM)}
 
 
 
@@ -372,6 +419,7 @@ You may also put some code snippet (which is NOT float by default), eg: \cref{ls
 
 \section{Fancy formulas here}
 
+
 %----------------------------------------------------------------------------------------
 % BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
@@ -381,12 +429,12 @@ You may also put some code snippet (which is NOT float by default), eg: \cref{ls
 \bibliographystyle{IEEEtran} %prima era alpha
 \bibliography{bibliography}
 
-\begin{acknowledgements} % this is optional
-Optional. Max 1 page.
-\end{acknowledgements}
+% \begin{acknowledgements} % this is optional
+% Optional. Max 1 page.
+% \end{acknowledgements}
 
 \chapter*{Ringraziamenti}
-\addcontentsline{toc}{chapter}{Ringraziamenti}
+\markboth{RINGRAZIAMENTI}{RINGRAZIAMENTI}
 Con questo lavoro di tesi, si conclude il mio percorso di studi
 sicuramente non facile ma che mi ha dato la possibilità di crescere sia
 a livello personale che professionale. \break
@@ -398,7 +446,7 @@ di loro non sarei mai riuscito a raggiungere questo traguardo. \break
 Ringrazio i miei amici in particolare l'associazione Sprite che hanno
 reso questo percorso più divertente.
 Ringrazio i bloccati e gli amici di Smash Bros per i momenti di divertimento e avermi dato un hobby per
-staccare dallo studio. \break
+staccare dallo studio.
 
 
 \end{document}
