@@ -375,10 +375,25 @@ per rilevare i domini generati da \acrshort{DGA}.
 
 Random Forest è un algoritmo esamble (cioè unisce più modelli) di Machine Learning supervisionato che usa un insieme di alberi decisionali
 per classificare i dati. Un albero decisionale è un modello che usa appunto una struttura ad albero
-per prendere decisioni, come può essere quello in \ref{fig:decision tree}. A seconda di determinate
+per prendere decisioni. Un esempio può essere quello nella \cref{fig:decision tree}, in cui, a seconda di determinate
 caratteristiche, l'albero decide se una persona rischia di avere un attacco cardiaco o meno.
-Random Forest è uno degli algoritmi più usati per la classificazione ma anche per la regressione(nel nostro caso
-classificazione).
+Il problema principale del singolo albero decisionale è che è molto suscettibile
+all'overfitting. Il random forest risolve questo problema aumentando 
+l'accuratezza del modello sia in fase di training che in fase di testing. \cite{598994}
+Random Forest usa un apporccio basato su feature, ovvero vengono selezionate
+delle caratteristiche del dataset che possono essere utili per la classificazione.
+Ad esempio, nel nostro caso, le caratteristiche potrebbero essere
+il numero di vocali, lunghezza del dominio o l'entropia.
+L'algoritmo funziona nel seguente modo:
+Per prima cosa vengono creati $n$ alberi decisionali, ognuno
+contenente una parte casuale del training set. Inoltre
+ogni albero decisionale viene addestrato su un sottoinsieme casuale
+di feature. Dopo di che, ogni albero fa la sua previsione,
+e la previsione viene fatta in base a ciò che la maggior parte
+degli alberi ha previsto. Qualora si trattasse di un problema di regressione,
+la previsione finale sarà la media delle previsioni di tutti gli alberi.
+
+
 
 
 
@@ -392,6 +407,11 @@ classificazione).
 \end{figure}
 
 \subsection{Long Short Term Memory (LSTM)}
+
+Le LSTM sono un tipo di rete neurale ricorrente (RNN). A differenza
+del Random Forest, le LSTM usano un approccio featureless e imparano
+direttamente dai dati. Questo lo rende più adatto con un dataset
+più grande e complesso.
 
 
 
