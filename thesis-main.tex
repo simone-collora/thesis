@@ -148,7 +148,7 @@ del botnet. Ci sono tre tipi di server \acrshort{C&C}:
         I bot si connettono al server \acrshort{IRC} e aspettano
         i comandi dal botmaster. I bot seguono un approccio PUSH ovvero
         quando un bot si connette ad un determinato canale, esso rimane connesso.
-        \item \textbf{HTTP}: Il più usato. Con questa tecnica, i bot usano un URL o IP
+        \item \textbf{HTTP / HTTPS}: Il più usato. Con questa tecnica, i bot usano un URL o IP
         per contatattare il server \acrshort{C&C}. Qua invece i bot seguono
         un approccio PULL. I bot si connettono al server \acrshort{C&C}
         periodicamente e controllano se ci sono nuovi comandi. Questo processo
@@ -410,23 +410,43 @@ XGBoost è un algoritmo di Machine Learning supervisionato
 \subsection{Long Short Term Memory (LSTM)}
 
 Le LSTM sono un tipo di rete neurale ricorrente (RNN). 
-A differenza delle RNN tradizionali, le LSTM sono in grado di
+A differenza delle RNN tradizionali, esse sono in grado di
 memorizzare informazioni per periodi di tempo più lunghi e possono
-avere più strati nascosti. Questo risolve uno dei problemi principali
+avere più strati nascosti. Create da Hochreiter e Schmidhuber nel 1997 \cite{LSTM1997},
+le LSTM risolvono uno dei problemi più importanti
 delle RNN standard, il vanishing gradient problem. Questo
 problema si verifica poiché durante la backpropagation, i gradienti
 tendono appunto a svanire, rendendo difficile l'apprendimento
-di relazioni a lungo termine. Per risolvere questo problema, le LSTM
-usano una struttura a gates(porte) che controllano il flusso delle informazioni.
+di relazioni a lungo termine. 
+Per risolverlo, le LSTM introducono una struttura dati vettoriale
+chiamata \textbf{Memory Cell}(o cella di memoria). Questa viene
+viene aggiornata ad ogni step tramite le operazioni decise dai "gates" (o porte).
+La struttura delle LSTM è composta nel seguente modo:
+\begin{itemize}
+    \item \textbf{Input Gate}: determina quali nuove informazioni
+    devono essere aggiunte allo stato della cella. Usa una funzione
+    sigmoide per decidere quali valori saranno aggiunti e una tanh
+    per creare nuovi valori
+    \item \textbf{Forget Gate}: gestisce quali informazioni
+    devono essere dimenticate dallo stato della cella. Usa una funzione
+    sigmoide per decidere quali informazioni saranno mantenute o dimenticate.
+    Se il valore è 0 le informazioni saranno dimenticate mentre se è 1 saranno mantenute.
+    \item \textbf{Output Gate}: decide come sarà il prossimo hidden state
+    Gli input sono passati a una funzione sigmoide e la cella
+    aggiornata viene passata a una tanh e moltiplicata con l'output della sigmoide
+    per decidere quali informazioni saranno passate.
+\end{itemize}
 
-
-del Random Forest, le LSTM usano un approccio featureless e imparano
-direttamente dai dati.
+Oltre alle LSTM tradizionali abbiamo anche le \textbf{BLSTM} (Bidirectional LSTM) che sono
+composte da due LSTM, che elaborano i dati in due direzioni diverse.
+A differenza del Random Forest, le LSTM usano un approccio featureless e imparano
+direttamente dai dati. Alcuni usi delle LSTM sono ad esempio
+il riconoscimento vocale o la traduzione automatica.
 
 \begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/lstm-3.png}
-    \caption{Esempio di LSTM \cite{LSTM_image}}
+    \includegraphics[width=.8\linewidth]{figures/gate_of_lstm.png}
+    \caption{Struttura di un LSTM \cite{LSTM_image}}
     \label{fig:LSTM}
 \end{figure}
 
@@ -434,16 +454,77 @@ direttamente dai dati.
 
 
 \chapter{Progetto}
-\section{Obiettivi}
 Il progetto ha come obiettivo quello di sviluppare un sistema
 di rilevamento di domini generati da \acrshort{DGA} tramite
 l'uso di tecniche di Machine Learning. 
+Per il dataset ho deciso di usare il dataset di YangYang \cite{dataset_yangyang}
+che contiene circa 1.5 milioni di domini \acrshort{DGA} e circa 1.5 milioni di domini legittimi.
 
-Per il dataset di addestramento ho usato un dataset fornito dall'azienda 
-Flashstart che contiene circa 5600 domini generati da \acrshort{DGA}.
-A questo ho aggiunto un dataset di circa 5600 domini benigni
-presi dal database di Cloudflare aggiornato
-al 12 maggio 2025\cite{cloudflare_domains}
+\section{Metriche di valutazione}
+Per valutare le prestazioni dei vari modelli si è deciso di usare i seguenti
+parametri:
+Accuracy, Pecision, Recall, F1-Score e Confusion Matrix. \hfill \break
+Nel nostro modello un DGA ha come label 1(positivo) mentre un dominio legittimo ha come label 0 (negativo).
+L'\textbf{Accuracy} è il rapporto del numero di predizioni
+corrette sul numero totale di predizioni effettuate.
+La formula è la seguente:
+\begin{equation}
+    Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+dove:
+\begin{itemize}
+    \item $TP$ è il numero di True Positive (Il numero di DGA classificati correttamente)
+    \item $TN$ è il numero di True Negative (Il numero di domini legittimi classificati correttamente)
+    \item $FP$ è il numero di False Positive (Il numero di domini legittimi classificati come DGA)
+    \item $FN$ è il numero di False Negative (Il numero di DGA classificati come domini legittimi)
+\end{itemize}
+
+La \textbf{Precision} è il rapporto tra il numero di True Positive 
+e il numero totale di predizioni positive effettuate.
+La formula è la seguente:
+\begin{equation}
+    Precision = \frac{TP}{TP + FP}
+\end{equation}
+La \textbf{Recall} è il rapporto tra il numero di True Positive
+e il numero totale di positivi ed è definita come segue:
+\begin{equation}
+    Recall = \frac{TP}{TP + FN}
+\end{equation}
+L'\textbf{F1-Score} è la media armonica tra Precision e Recall.
+ed è definita come:
+\begin{equation}
+    F1-Score = 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}
+\end{equation}
+Nel progetto è stata usato Classification Report di scikit-learn
+per calcolare queste metriche.
+La \textbf{Confusion Matrix} è una matrice che mostra il numero di predizioni
+corrette e sbagliate per ogni classe. Un vantaggio
+della Confusion Matrix è che permette di vedere
+quali classi sono state classificate correttamente e quali no e la quantità precisa di ogni classe.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/confusion-matrix.png}
+    \caption{Esempio di Confusion Matrix \cite{confusion_matrix_image}}
+    \label{fig:confusion matrix}
+\end{figure}
+
+
+
+\section{Test con LSTM e BLSTM}
+Poiché LSTM è un tipo di rete neurale adatto per il riconoscimento di pattern
+ho deciso di usarle per il progetto sia nella sua forma classica che in quella bidirezionale.
+Il modello però non è in grado di leggere direttamente i domini.
+Perciò bisogna convertire i domini in un formato leggibile dalla rete neurale e questo viene
+svolto tramite un processo chiamato \textbf{Tokenization}.
+Questo converte i dati in un formato leggibile dalla rete neurale.
+Ci sono vari metodi di tokenization come word tokenization, che divide 
+le stringhe in più parole o la character tokenization
+che divide le stringhe in singoli caratteri. Essendo i domini delle semplici stringhe,
+spesso senza parole di senso compiuto e con caratteri speciali come il punto o il trattino,
+per questo progetto si è deciso di usare la character tokenization.
+
+
 
 
 \section{Some cool topic}
@@ -474,12 +555,11 @@ You may also put some code snippet (which is NOT float by default), eg: \cref{ls
 \markboth{RINGRAZIAMENTI}{RINGRAZIAMENTI}
 Con questo lavoro di tesi, si conclude il mio percorso di studi
 sicuramente non facile ma che mi ha dato la possibilità di crescere sia
-a livello personale che professionale. \break
-Ringrazio il mio relatore, il Prof. Mirko Viroli e il mio correlatore
-Dott. Gianluca Aguzzi per essere stati sempre disponibili e avermi aiutato con il lavoro e Flashstart
-per avermi dato la possibilità di lavorare su questo progetto. \break
+a livello personale che professionale.  \hfill \break
+Ringrazio il mio relatore, il Prof. Mirko Viroli per essere stato sempre disponibile e avermi aiutato con il lavoro
+e Lorenzo Magi e tutta Flashstart per l'aiuto dato e per avermi dato la possibilità di lavorare su questo progetto.  \hfill \break
 Ringrazio la mia famiglia per avermi sempre supportato sia moralmente che economicamente. Senza
-di loro non sarei mai riuscito a raggiungere questo traguardo. \break
+di loro non sarei mai riuscito a raggiungere questo traguardo.  \hfill \break
 Ringrazio i miei amici in particolare l'associazione Sprite che hanno
 reso questo percorso più divertente.
 Ringrazio i bloccati e gli amici di Smash Bros per i momenti di divertimento e avermi dato un hobby per
