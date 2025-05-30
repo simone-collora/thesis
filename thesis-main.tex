@@ -6,6 +6,7 @@
 \usepackage{shortcuts}
 \usepackage{acronym}
 \usepackage[acronym]{glossaries}
+\usepackage{float}
 
 \school{\unibo}
 \programme{Corso di Laurea Triennale in Ingegneria e Scienze Informatiche}
@@ -28,7 +29,7 @@
 \newacronym{IRC}{IRC}{Internet Relay Chat}
 
 
-\mainlinespacing{1.241} % line spacing in mainmatter, comment to default (1)
+\mainlinespacing{1.1} % line spacing in mainmatter, comment to default (1) before it was 1.241
 
 \begin{document}
 \frontmatter\frontispiece
@@ -122,7 +123,7 @@ La vita di un botnet nella maggior parte dei casi è divisa in 4 fasi:
 
 \end{enumerate}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/The-Lifecycle-Schema-of-a-typical-Botnet.png}
     \caption{Ciclo di vita di un botnet \cite{Ogu2016}}
@@ -163,7 +164,7 @@ del botnet. Ci sono tre tipi di server \acrshort{C&C}:
 
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/Types-of-CC.png}
     \caption{Esempio di server \acrshort{C&C}. (a) centralizzato, (b) decentralizzato \cite{6487169}}
@@ -199,7 +200,7 @@ potrebbe essere quello di fare reverse engineering
 del \acrshort{DGA} per capire quale seed viene utilizzato per generare i domini.
 Questo però risulta lento e dispendioso e possibilmente inefficace \cite{8887881}.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/DGA example.jpg}
     \caption{Esempio del funzionamento di un \acrshort{DGA} \cite{8887881}}
@@ -270,7 +271,7 @@ A sua volta una rete neurale è composta da vari strati:
     un output binario (0 o 1) come sarà nel nostro caso(DGA o non DGA)
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/MultiLayerNeuralNetwork.png}
     \caption{Esempio di rete neurale \cite{wiki:001}}
@@ -358,7 +359,7 @@ Il numero di epoche è un iperparametro che indica quante volte
 l'algoritmo di apprendimento deve passare attraverso il dataset di training\cite{brownlee2018difference}.
 Infine viene testato il modello sul test set e, se la precisione
 è soddisfacente, il modello potrà essere usato.
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/Machine-learning-pipeline.png}
     \caption{Pipeline di un modello di Machine Learning \cite{phdthesishamza}}
@@ -397,7 +398,7 @@ e per la sua capacità di gestire grandi quantità di dati e feature senza
 perdere accuretezza.
 
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/Decision_tree_for_heart_attack.png}
     \caption{Esempio di albero decisionale \cite{decision_tree_image}}
@@ -502,9 +503,9 @@ La \textbf{Confusion Matrix} è una matrice che mostra il numero di predizioni
 corrette e sbagliate per ogni classe. Un vantaggio
 della Confusion Matrix è che permette di vedere
 quali classi sono state classificate correttamente e quali no e la quantità precisa di ogni classe.
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=.8\linewidth]{figures/confusion-matrix.png}
+    \includegraphics[width=0.6\linewidth]{figures/confusion-matrix.png}
     \caption{Esempio di Confusion Matrix \cite{confusion_matrix_image}}
     \label{fig:confusion matrix}
 \end{figure}
