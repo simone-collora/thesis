@@ -405,8 +405,8 @@ perdere accuretezza.
     \label{fig:decision tree}
 \end{figure}
 
-\subsection{XGBoost}
-XGBoost è un algoritmo di Machine Learning supervisionato
+% \subsection{XGBoost}
+% XGBoost è un algoritmo di Machine Learning supervisionato
 
 \subsection{Long Short Term Memory (LSTM)}
 
@@ -461,6 +461,22 @@ l'uso di tecniche di Machine Learning.
 Per il dataset ho deciso di usare il dataset di YangYang \cite{dataset_yangyang}
 che contiene circa 1.5 milioni di domini \acrshort{DGA} e circa 1.5 milioni di domini legittimi.
 
+\section{Linguaggi e librerie usate}
+Per il progetto è stato usato il linguaggio Python poiché è il più usato
+in ambito Machine Learning e analisi dei dati e offre una vasta gamma di librerie
+adatte a questo scopo. Le librerie usate sono:
+\begin{itemize}
+    \item \textbf{Pandas}: libreria per la manipolazione e l'analisi dei dati.
+    \item \textbf{Numpy}: libreria per il calcolo scientifico e l'elaborazione di array.
+    \item \textbf{Scikit-learn}: libreria per il Machine Learning che offre vari algoritmi
+    e strumenti per la valutazione dei modelli Nel nostro caso è stata usata per 
+    la divisione del dataset in training, validation e test set,
+    per l'implementazione del modello Random Forest e per il calcolo delle metriche di valutazione.
+    \item \textbf{Tensorflow e Keras}: librerie per la creazione di reti neurali. Usate per la
+    tokenization dei domini e per l'implementazione delle LSTM e BLSTM.
+    \item \textbf{Matplotlib}: libreria per la visualizzazione dei dati e per la creazione di grafici.
+\end{itemize}
+
 \section{Metriche di valutazione}
 Per valutare le prestazioni dei vari modelli si è deciso di usare i seguenti
 parametri:
@@ -510,7 +526,7 @@ quali classi sono state classificate correttamente e quali no e la quantità pre
     \label{fig:confusion matrix}
 \end{figure}
 
-
+\section{Test con Random Forest}
 
 \section{Test con LSTM e BLSTM}
 Poiché LSTM è un tipo di rete neurale adatto per il riconoscimento di pattern
@@ -524,6 +540,30 @@ le stringhe in più parole o la character tokenization
 che divide le stringhe in singoli caratteri. Essendo i domini delle semplici stringhe,
 spesso senza parole di senso compiuto e con caratteri speciali come il punto o il trattino,
 per questo progetto si è deciso di usare la character tokenization.
+Per fare ciò si è usato il metodo \texttt{Tokenizer} di Keras.
+Per questo modello si è deciso di usare
+un modello sequenziale ovvero un modello in cui gli
+strati sono disposti in sequenza uno dopo l'altro. \hfil \break
+Il primo strato è uno strato di embedding che serve 
+per convertire i caratteri in vettori numerici poiché
+come detto in precedenza, le reti neurali
+possono leggere solo numeri. \hfil \break
+Successivamente nel modello è presente uno strato di LSTM
+con 128 neuroni. Il numero di neuroni non 
+è un valore fisso e non è determinato da una regola precisa.
+Esso può essere scelto in base
+alla complessità del problema o alla quantità di dati
+presenti nel dataset. In generale con troppi neuroni si rischia di
+andare in overfitting e con pochi il contrario. Dopo
+vari tentativi, 128 neuroni è sembrata la scelta migliore. \hfil \break
+Dopo di che è stato aggiunto uno strato di dropout
+ovvero uno strato che disabilita casualmente
+un certo numero di neuroni durante l'addestramento 
+per evitare l'overfitting. Anche il rate di dropout non
+è un valore fisso.
+Dopo è presente un altro strato LSTM come il primo e un dropout
+
+
 
 
 
