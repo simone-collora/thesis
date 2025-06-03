@@ -29,7 +29,7 @@
 \newacronym{IRC}{IRC}{Internet Relay Chat}
 
 
-\mainlinespacing{1.1} % line spacing in mainmatter, comment to default (1) before it was 1.241
+\mainlinespacing{1.05} % line spacing in mainmatter, comment to default (1) before it was 1.241
 
 \begin{document}
 \frontmatter\frontispiece
@@ -88,8 +88,13 @@ verranno discusse le conclusioni e i possibili sviluppi futuri.
 
 Di seguito sono descritti i concetti base su cui si basa il progetto.
 
+\section{Domain Name System}
+Il \textbf{Domain Name System} (DNS) è un sistema che
+traduce un nome di dominio in un indirizzo IP.
+
+
+
 \section{Botnets e DGA}
-%I suggest referencing stuff as follows: \cref{fig:DGA example} or \Cref{fig:DGA example}
 
 \subsection{Botnets}
 
@@ -173,7 +178,6 @@ del botnet. Ci sono tre tipi di server \acrshort{C&C}:
 
 \subsection{Domain Generation Algorithm}
 
-
 I \acrshort{DGA} sono algoritmi che generano migliaia di domini in modo pseudo casuale.
 Prima viene scelto un seed, di solito la data odierna
 o anche le previsioni meteo \cite{8621875} e, tramite
@@ -194,7 +198,6 @@ risulta inefficace poiché vengono generati migliaia di domini
 continuamente. Si pensi che Conficker C, un famoso malware
 che utilizza \acrshort{DGA}, è in grado di generare
 fino a 50.000 domini pseudo casuali al giorno \cite{978131}.
-
 Un altro modo per contrastare ciò
 potrebbe essere quello di fare reverse engineering
 del \acrshort{DGA} per capire quale seed viene utilizzato per generare i domini.
@@ -247,7 +250,7 @@ da due componenti:
     sigmoide e la funzione ReLU.
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/ArtificialNeuronModel.png}
     \caption{Esempio di neurone artificiale \cite{wiki:xxx}}
@@ -528,7 +531,7 @@ quali classi sono state classificate correttamente e quali no e la quantità pre
 
 \section{Test con Random Forest}
 
-\section{Test con LSTM e BLSTM}
+\section{Test con LSTM}
 Poiché LSTM è un tipo di rete neurale adatto per il riconoscimento di pattern
 ho deciso di usarle per il progetto sia nella sua forma classica che in quella bidirezionale.
 Il modello però non è in grado di leggere direttamente i domini.
@@ -555,15 +558,74 @@ Esso può essere scelto in base
 alla complessità del problema o alla quantità di dati
 presenti nel dataset. In generale con troppi neuroni si rischia di
 andare in overfitting e con pochi il contrario. Dopo
-vari tentativi, 128 neuroni è sembrata la scelta migliore. \hfil \break
+vari tentativi, 128 neuroni è sembrata la scelta migliore poichè
+con più neuroni il modello non imparava, rimanendo bloccato con un accuracy di 0.5 circa. \hfil \break
 Dopo di che è stato aggiunto uno strato di dropout
 ovvero uno strato che disabilita casualmente
 un certo numero di neuroni durante l'addestramento 
 per evitare l'overfitting. Anche il rate di dropout non
 è un valore fisso.
 Dopo è presente un altro strato LSTM come il primo e un dropout
+e uno strato con attivazione relu con 64 neuroni che serve
+a catturare pattern più complessi. Inizialmente
+si era provato senza questo strato ma 
+il modello aveva una precisione inferiore anche se di poco. Infine
+l'ultimo è uno strato denso con attivazione sigmoide
+che serve a classificare i dati in due classi, DGA e non DGA.
+Per il training sono state scelte inizialmente 10 epoche.
+Il modello però andava in overfitting, quindi si è deciso di aumentare
+il numero di epoche a 50 e di usare l'early stopping, un metodo per interrompere
+l'addestramento quando il modello non migliora più e per evitare l'overfitting. Alla
+fine il modello l'addestramento si è fermato all'epoch 26 impiegando circa 30 minuti e poco più di 1 minuto per epoca.
+Il modello raggiunge il 99\% di accuracy, 99\% di precision, 99\% di recall e 99\% di F1-Score
+come si può vedere nella \cref{fig:LSTM results}.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/LSTM_results.png}
+    \caption{Risultati del modello LSTM}
+    \label{fig:LSTM results}
+\end{figure}
 
+Dalla confusion matrix \ref{fig:LSTM confusion matrix} si può vedere che il modello ha classificato quasi tutti 
+i domini correttamente. La maggior parte degli errori sono
+False Negative ovvero domini DGA classificati come legittimi.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/LSTM conf_matr.png}
+    \caption{Confusion Matrix del modello LSTM}
+    \label{fig:LSTM confusion matrix}
+\end{figure}
+
+\section{Test con BLSTM}
+
+Come detto in precedenza, le BLSTM sono una variante delle LSTM che
+consentono di elaborare i dati in entrambe le direzioni.
+Questo permette al modello di catturare meglio
+i pattern nei dati.
+Come nelle LSTM aumentare o dimunire il numero di neuroni
+non ha avuto effetti positivi sul modello perciò si è deciso di usare anche qui
+128 neuroni per ogni strato BLSTM e uno denso con attivazione relu con 64 neuroni.
+Le tempistiche di addestramento, però, sono risultate
+maggiori rispetto alle LSTM classiche, impiegando circa 4 minuti ad epoca e circa 1 ora e 10 minuti in totale.
+I risultati sono stati molto simili a quelli delle LSTM come si può vedere nella \cref{fig:BLSTM results}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/BLSTM_results.png}
+    \caption{Risultati del modello BLSTM}
+    \label{fig:BLSTM results}
+\end{figure}
+
+Per quanto riguarda la confusion matrix \ref{fig:BLSTM confusion matrix}, il modello ha classificato
+quasi tutti i domini correttamente. Il modello risulta più preciso anche se di poco rispetto alle LSTM classiche.
+La maggior parte degli errori sono False Negative anche qui
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/BLSTM conf_matr.png}
+    \caption{Confusion Matrix del modello BLSTM}
+    \label{fig:BLSTM confusion matrix}
+\end{figure}
 
 
 
