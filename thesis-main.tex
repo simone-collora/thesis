@@ -531,9 +531,89 @@ quali classi sono state classificate correttamente e quali no e la quantità pre
 
 \section{Test con Random Forest}
 
+Il primo algoritmo testato è stato il Random Forest.
+Qui non abbiamo bisogno di convertire i domini in
+altri formati poiché il modello prenderà
+come dati non il dominio in sé ma le sue caratteristiche(o features).
+I parametri che prende il modello sono:
+\begin{itemize}
+    \item \textbf{n\_estimators}: il numero di alberi decisionali da creare
+    Di default è 100. Si è provato ad aumentare il valore ma a parte un maggiore
+    tempo di addestramento, non si è notato un miglioramento significativo.
+    \item \textbf{criterion}: la funzione usata per misurare la qualità di una divisione.
+    Di default usa la funzione "gini".
+    \item \textbf{max\_depth}: la profondità massima di ogni albero.
+    Di default è None, ovvero gli alberi cresceranno fino a quando
+    tutti i nodi saranno puri o fino a quando tutte le foglie
+    conterranno meno di min\_samples\_split campioni.
+    \item \textbf{min\_samples\_split}: il numero minimo di campioni richiesti
+    per dividere un nodo interno. Di default è 2.
+    \item \textbf{min\_samples\_leaf}: il numero minimo di campioni richiesti
+    per essere una foglia. Di default è 1.
+    \item \textbf{max\_features}: il numero massimo di feature da considerare
+    per la divisione di un nodo. Di default è "sqrt" ovvero la radice quadrata
+    del numero di feature.
+    \item \textbf{random\_state}: il seed per la generazione casuale dei dati.
+    Di default è None, ma facendo così il modello resituirà risultati diversi.
+    Perciò si è deciso di dargli un seed fisso.
+\end{itemize}
+
+A parte per il random\_state, gli altri parametri sono stati lasciati
+con i valori di default poiché, dopo vari test non sono stati riscontrati miglioramenti.
+Per le features, si è notato che più sono le features, migliore è il risultato del modello.
+Inizialmente sono state usate come features la lunghezza del dominio, il numero di vocali,
+il numero di consonanti, la quantità di numeri e l'entropia del dominio.
+L'entropia misura la randomicità di una stringa e viene calcolata con la seguente formula:
+\begin{equation}
+    Entropy = -\sum_{i=1}^{n} p_i \cdot \log_2(p_i)
+\end{equation}
+
+dove $p_i$ è la probabilità di ogni carattere nel dominio.
+
+Successivamente sono stati aggiunti altri parametri come il ratio tra consonanti e vocali,
+il numero di trattini, l'entropia per bigramma, e il numero di consonanti e vocali consecutive.
+Random Forest possiede un metodo chiamato \texttt{feature\_importances\_}
+che permette di calcolare l'importanza di ogni feature nel modello.
+Grazie ad esso si è notato che le features più importanti sono state
+l'entropia e quante vocali consecutive ci sono nel dominio.
+Alcune features come se il dominio contiene un numero all'inizio o alla fine
+o se il dominio contiene una wordlist di parole comuni ai DGA sono state
+rimosse poiché non portavano un miglioramento significativo e anzi 
+rischiavano di portare a un overfitting del modello.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/RF_feature.png}
+    \caption{Parte del dataset con i domini e loro features}
+    \label{fig:RF feature}
+\end{figure}
+
+Dopo vari test si è raggiunta un accuratezza del 91\% ma
+con risultati peggiori nel riconoscimento dei DGA come si può vedere nella \cref{fig:RF results}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/RF_results.png}
+    \caption{Risultati del modello Random Forest}
+    \label{fig:RF results}
+\end{figure}
+
+Dalla Confusion Matrix \ref{fig:RF confusion matrix} si può vedere che il modello ha classificato
+più di 5000 False Negative ovvero domini DGA classificati come legittimi rispetto ai False Positive.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/RF_conf_matr.png}
+    \caption{Confusion Matrix del modello Random Forest}
+    \label{fig:RF confusion matrix}
+\end{figure}
+
+
+
+
 \section{Test con LSTM}
 Poiché LSTM è un tipo di rete neurale adatto per il riconoscimento di pattern
-ho deciso di usarle per il progetto sia nella sua forma classica che in quella bidirezionale.
+ho deciso di usarlo per il progetto sia nella sua forma classica che in quella bidirezionale.
 Il modello però non è in grado di leggere direttamente i domini.
 Perciò bisogna convertire i domini in un formato leggibile dalla rete neurale e questo viene
 svolto tramite un processo chiamato \textbf{Tokenization}.
@@ -572,15 +652,15 @@ si era provato senza questo strato ma
 il modello aveva una precisione inferiore anche se di poco. Infine
 l'ultimo è uno strato denso con attivazione sigmoide
 che serve a classificare i dati in due classi, DGA e non DGA.
-Per il training sono state scelte inizialmente 10 epoche.
+Per il training sono state scelte inizialmente 5 e poi 10 epoch.
 Il modello però andava in overfitting, quindi si è deciso di aumentare
 il numero di epoche a 50 e di usare l'early stopping, un metodo per interrompere
 l'addestramento quando il modello non migliora più e per evitare l'overfitting. Alla
 fine il modello l'addestramento si è fermato all'epoch 26 impiegando circa 30 minuti e poco più di 1 minuto per epoca.
-Il modello raggiunge il 99\% di accuracy, 99\% di precision, 99\% di recall e 99\% di F1-Score
+Il modello raggiunge il 99\% di accuracy e un alto F1-Score nel riconoscimento di entrambi i tipi di domini,
 come si può vedere nella \cref{fig:LSTM results}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=.8\linewidth]{figures/LSTM_results.png}
     \caption{Risultati del modello LSTM}
@@ -588,7 +668,7 @@ come si può vedere nella \cref{fig:LSTM results}.
 \end{figure}
 
 Dalla confusion matrix \ref{fig:LSTM confusion matrix} si può vedere che il modello ha classificato quasi tutti 
-i domini correttamente. La maggior parte degli errori sono
+i domini correttamente. Leggermente di più sono i
 False Negative ovvero domini DGA classificati come legittimi.
 \begin{figure}[H]
     \centering
@@ -607,7 +687,7 @@ Come nelle LSTM aumentare o dimunire il numero di neuroni
 non ha avuto effetti positivi sul modello perciò si è deciso di usare anche qui
 128 neuroni per ogni strato BLSTM e uno denso con attivazione relu con 64 neuroni.
 Le tempistiche di addestramento, però, sono risultate
-maggiori rispetto alle LSTM classiche, impiegando circa 4 minuti ad epoca e circa 1 ora e 10 minuti in totale.
+maggiori rispetto alle LSTM classiche, impiegando circa 4 minuti ad epoca e circa 1 ora e 10 minuti per 22 epochs totali.
 I risultati sono stati molto simili a quelli delle LSTM come si può vedere nella \cref{fig:BLSTM results}.
 
 \begin{figure}[H]
