@@ -324,7 +324,7 @@ dovranno essere convertiti in un vettore numerico. A seconda di come
     o negativo.
 \end{itemize}
 
-Si è soliti dividere il dataset in tre parti ovvero training set, validation set e test set.
+\noindent Si è soliti dividere il dataset in tre parti ovvero training set, validation set e test set.
 Il \textbf{training set} è il dataset su cui viene addestrato
 il modello, il \textbf{validation set} è una parte del training set
 utile per riconoscere se il modello è in grado di generalizzare
@@ -382,7 +382,15 @@ per classificare i dati. Un albero decisionale è un modello che usa appunto una
 per prendere decisioni. Un esempio può essere quello nella \cref{fig:decision tree}, in cui, a seconda di determinate
 caratteristiche, l'albero decide se una persona rischia di avere un attacco cardiaco o meno.
 Il problema principale del singolo albero decisionale è che è molto suscettibile
-all'overfitting. Il random forest risolve questo problema aumentando 
+all'overfitting.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/Decision_tree_for_heart_attack.png}
+    \caption{Esempio di albero decisionale \cite{decision_tree_image}}
+    \label{fig:decision tree}
+\end{figure}
+
+\noindent Il random forest risolve questo problema aumentando 
 l'accuratezza del modello sia in fase di training che in fase di testing. \cite{598994}
 Random Forest usa un apporccio basato su feature, ovvero vengono selezionate
 delle caratteristiche del dataset che possono essere utili per la classificazione.
@@ -400,13 +408,14 @@ L'algoritmo risulta tra i più usati per la sua semplicità e velocità
 e per la sua capacità di gestire grandi quantità di dati e feature senza
 perdere accuretezza.
 
-
-\begin{figure}[H]
+\begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/Decision_tree_for_heart_attack.png}
-    \caption{Esempio di albero decisionale \cite{decision_tree_image}}
-    \label{fig:decision tree}
+    \includegraphics[width=.8\linewidth]{figures/Illustration-of-random-forest-trees.jpg}
+    \caption{Esempio di Random Forest \cite{RFIMAGE}}
+    \label{fig:random forest}
 \end{figure}
+
+
 
 % \subsection{XGBoost}
 % XGBoost è un algoritmo di Machine Learning supervisionato
@@ -441,13 +450,13 @@ La struttura delle LSTM è composta nel seguente modo:
     per decidere quali informazioni saranno passate.
 \end{itemize}
 
-Oltre alle LSTM tradizionali abbiamo anche le \textbf{BLSTM} (Bidirectional LSTM) che sono
+\noindent Oltre alle LSTM tradizionali abbiamo anche le \textbf{BLSTM} (Bidirectional LSTM) che sono
 composte da due LSTM, che elaborano i dati in due direzioni diverse.
 A differenza del Random Forest, le LSTM usano un approccio featureless e imparano
 direttamente dai dati. Alcuni usi delle LSTM sono ad esempio
 il riconoscimento vocale o la traduzione automatica.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/gate_of_lstm.png}
     \caption{Struttura di un LSTM \cite{LSTM_image}}
@@ -471,6 +480,7 @@ adatte a questo scopo. Le librerie usate sono:
 \begin{itemize}
     \item \textbf{Pandas}: libreria per la manipolazione e l'analisi dei dati.
     \item \textbf{Numpy}: libreria per il calcolo scientifico e l'elaborazione di array.
+    \item \textbf{math}: libreria per le funzioni matematiche di base.
     \item \textbf{Scikit-learn}: libreria per il Machine Learning che offre vari algoritmi
     e strumenti per la valutazione dei modelli Nel nostro caso è stata usata per 
     la divisione del dataset in training, validation e test set,
@@ -500,7 +510,7 @@ dove:
     \item $FN$ è il numero di False Negative (Il numero di DGA classificati come domini legittimi)
 \end{itemize}
 
-La \textbf{Precision} è il rapporto tra il numero di True Positive 
+\noindent La \textbf{Precision} è il rapporto tra il numero di True Positive 
 e il numero totale di predizioni positive effettuate.
 La formula è la seguente:
 \begin{equation}
@@ -538,8 +548,9 @@ come dati non il dominio in sé ma le sue caratteristiche(o features).
 I parametri che prende il modello sono:
 \begin{itemize}
     \item \textbf{n\_estimators}: il numero di alberi decisionali da creare
-    Di default è 100. Si è provato ad aumentare il valore ma a parte un maggiore
-    tempo di addestramento, non si è notato un miglioramento significativo.
+    Di default è 100. Si è provato ad aumentare il valore finchè, a parte un maggiore
+    tempo di addestramento, non si è notato alcun miglioramento significativo.
+    Alla fine si è deciso di usare il valore 200.
     \item \textbf{criterion}: la funzione usata per misurare la qualità di una divisione.
     Di default usa la funzione "gini".
     \item \textbf{max\_depth}: la profondità massima di ogni albero.
@@ -557,38 +568,32 @@ I parametri che prende il modello sono:
     Di default è None, ma facendo così il modello resituirà risultati diversi.
     Perciò si è deciso di dargli un seed fisso.
 \end{itemize}
-
-A parte per il random\_state, gli altri parametri sono stati lasciati
-con i valori di default poiché, dopo vari test non sono stati riscontrati miglioramenti.
-Per le features, si è notato che più sono le features, migliore è il risultato del modello.
+A parte per il random\_state e il numero di alberi gli altri parametri sono stati lasciati
+con i valori di default poiché, dopo vari test non sono stati riscontrati grossi miglioramenti.
 Inizialmente sono state usate come features la lunghezza del dominio, il numero di vocali,
 il numero di consonanti, la quantità di numeri e l'entropia del dominio.
 L'entropia misura la randomicità di una stringa e viene calcolata con la seguente formula:
 \begin{equation}
     Entropy = -\sum_{i=1}^{n} p_i \cdot \log_2(p_i)
 \end{equation}
-
-dove $p_i$ è la probabilità di ogni carattere nel dominio.
-
+dove $p_i$ è la probabilità di ogni carattere nel dominio. \hfil \break
 Successivamente sono stati aggiunti altri parametri come il ratio tra consonanti e vocali,
 il numero di trattini, l'entropia per bigramma, e il numero di consonanti e vocali consecutive.
-Random Forest possiede un metodo chiamato \texttt{feature\_importances\_}
-che permette di calcolare l'importanza di ogni feature nel modello.
+Random Forest possiede un metodo che permette di calcolare l'importanza di ogni feature nel modello
+chiamato \texttt{feature\_importances\_}
 Grazie ad esso si è notato che le features più importanti sono state
 l'entropia e quante vocali consecutive ci sono nel dominio.
 Alcune features come se il dominio contiene un numero all'inizio o alla fine
 o se il dominio contiene una wordlist di parole comuni ai DGA sono state
 rimosse poiché non portavano un miglioramento significativo e anzi 
 rischiavano di portare a un overfitting del modello.
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/RF_feature.png}
     \caption{Parte del dataset con i domini e loro features}
     \label{fig:RF feature}
 \end{figure}
-
-Dopo vari test si è raggiunta un accuratezza del 91\% ma
+\noindent Dopo vari test si è raggiunta un accuratezza del 91\% ma
 con risultati peggiori nel riconoscimento dei DGA come si può vedere nella \cref{fig:RF results}.
 
 \begin{figure}[H]
@@ -598,7 +603,7 @@ con risultati peggiori nel riconoscimento dei DGA come si può vedere nella \cre
     \label{fig:RF results}
 \end{figure}
 
-Dalla Confusion Matrix \ref{fig:RF confusion matrix} si può vedere che il modello ha classificato
+\noindent Dalla Confusion Matrix \ref{fig:RF confusion matrix} si può vedere che il modello ha classificato
 più di 5000 False Negative ovvero domini DGA classificati come legittimi rispetto ai False Positive.
 
 \begin{figure}[H]
@@ -667,7 +672,7 @@ come si può vedere nella \cref{fig:LSTM results}.
     \label{fig:LSTM results}
 \end{figure}
 
-Dalla confusion matrix \ref{fig:LSTM confusion matrix} si può vedere che il modello ha classificato quasi tutti 
+\noindent Dalla confusion matrix \ref{fig:LSTM confusion matrix} si può vedere che il modello ha classificato quasi tutti 
 i domini correttamente. Leggermente di più sono i
 False Negative ovvero domini DGA classificati come legittimi.
 \begin{figure}[H]
@@ -697,7 +702,7 @@ I risultati sono stati molto simili a quelli delle LSTM come si può vedere nell
     \label{fig:BLSTM results}
 \end{figure}
 
-Per quanto riguarda la confusion matrix \ref{fig:BLSTM confusion matrix}, il modello ha classificato
+\noindent Per quanto riguarda la confusion matrix \ref{fig:BLSTM confusion matrix}, il modello ha classificato
 quasi tutti i domini correttamente. Il modello risulta più preciso anche se di poco rispetto alle LSTM classiche.
 La maggior parte degli errori sono False Negative anche qui
 \begin{figure}[H]
@@ -710,15 +715,13 @@ La maggior parte degli errori sono False Negative anche qui
 
 
 
-\section{Some cool topic}
+% \chapter{Contribution}
 
-\chapter{Contribution}
+% You may also put some code snippet (which is NOT float by default), eg: \cref{lst:random-code}.
 
-You may also put some code snippet (which is NOT float by default), eg: \cref{lst:random-code}.
+% \lstinputlisting[float,language=Java,label={lst:random-code}]{listings/HelloWorld.java}
 
-\lstinputlisting[float,language=Java,label={lst:random-code}]{listings/HelloWorld.java}
-
-\section{Fancy formulas here}
+% \section{Fancy formulas here}
 
 
 %----------------------------------------------------------------------------------------
@@ -730,9 +733,9 @@ You may also put some code snippet (which is NOT float by default), eg: \cref{ls
 \bibliographystyle{IEEEtran} %prima era alpha
 \bibliography{bibliography}
 
-% \begin{acknowledgements} % this is optional
-% Optional. Max 1 page.
-% \end{acknowledgements}
+\begin{acknowledgements} % this is optional
+ Optional. Max 1 page.
+\end{acknowledgements}
 
 \chapter*{Ringraziamenti}
 \markboth{RINGRAZIAMENTI}{RINGRAZIAMENTI}
