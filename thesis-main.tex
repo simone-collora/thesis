@@ -75,7 +75,7 @@ vari metodi di Machine Learning per rilevare questi domini.
 
 
 \paragraph{Struttura della tesi}
-Il lavoro di tesi si dividerà in 4 capitoli. Nel primo
+Il lavoro di tesi si dividerà in 3 capitoli. Nel primo
 capitolo verrano descritti concetti di base riguardanti \acrshort{DGA} e Botnets,
 e Machine Learning con una breve descrizione delle reti neurali e di alcuni
 algoritmi usati. Nel secondo capitolo verrà descritto il progetto,
@@ -91,6 +91,7 @@ Di seguito sono descritti i concetti base su cui si basa il progetto.
 \section{Domain Name System}
 Il \textbf{Domain Name System} (DNS) è un sistema che
 traduce un nome di dominio in un indirizzo IP.
+
 
 
 
@@ -436,6 +437,7 @@ Il Boosting funziona nel seguente modo:
 
 
 
+
 \subsection{Long Short Term Memory (LSTM)}
 
 Le LSTM sono un tipo di rete neurale ricorrente (RNN). 
@@ -501,6 +503,7 @@ adatte a questo scopo. Le librerie usate sono:
     e strumenti per la valutazione dei modelli Nel nostro caso è stata usata per 
     la divisione del dataset in training, validation e test set,
     per l'implementazione del modello Random Forest e per il calcolo delle metriche di valutazione.
+    \item \textbf{XGBoost}: libreria per l'implementazione dell'algoritmo XGBoost.
     \item \textbf{Tensorflow e Keras}: librerie per la creazione di reti neurali. Usate per la
     tokenization dei domini e per l'implementazione delle LSTM e BLSTM.
     \item \textbf{Matplotlib}: libreria per la visualizzazione dei dati e per la creazione di grafici.
@@ -610,7 +613,7 @@ rischiavano di portare a un overfitting del modello.
     \label{fig:RF feature}
 \end{figure}
 \noindent Dopo vari test si è raggiunta un accuratezza del 91\% ma
-con risultati peggiori nel riconoscimento dei DGA come si può vedere nella \cref{fig:RF results}.
+con risultati peggiori nel riconoscimento dei DGA rispetto ai legit come si può vedere nella \cref{fig:RF results}.
 
 \begin{figure}[H]
     \centering
@@ -628,6 +631,84 @@ più di 5000 False Negative ovvero domini DGA classificati come legittimi rispet
     \caption{Confusion Matrix del modello Random Forest}
     \label{fig:RF confusion matrix}
 \end{figure}
+
+\section{Test con XGBoost}
+XGBoost come Random Forest non ha bisogno dei dati convertiti
+ma delle loro features.
+Le features usate sono state le stesse del modello Random Forest.
+I parametri che XGBoost prende in input sono:
+\begin{itemize}
+    \item \textbf{n\_estimators}: il numero di alberi da creare.
+    Di default è 100. Essendo un modello sequenziale, il numero di alberi
+    può essere aumentato di molto e aggiungere un early stopping
+    per evitare l'overfitting. L'early stopping è un metodo che interrompe
+    l'addestramento quando il modello non migliora più. Il numero
+    di alberi che si è scelto è 10000.
+    \item \textbf{learning\_rate}: il tasso di apprendimento del modello.
+    Di default è 0.3. Questo parametro controlla quanto il modello
+    impara ad ogni iterazione. Un valore più basso può portare a un modello
+    più preciso ma richiede più iterazioni.
+    Si è provato inizialmente il valore di default e progressivamente
+    è stato abbassato fino a 0.01.
+    \item \textbf{max\_depth}: la profondità massima di ogni albero.
+    Di default è 6. Più si aumenta questo valore, più il modello
+    diventa complesso e rischia di andare in overfitting.
+    Si è deciso di usare il valore di default.
+    \item \textbf{min\_child\_weight}: il peso minimo di un nodo figlio.
+    Di default è 1. Questo parametro controlla la quantità minima
+    di campioni richiesti per creare un nodo figlio. Un valore più alto
+    può portare a un modello più semplice e meno suscettibile all'overfitting
+    ma se troppo alto esso può portare ad underfitting.
+    Si è deciso di usare 3.
+    \item \textbf{subsample}: la frazione di campioni da usare per addestrare
+    ogni albero che deve essere compresa tra 0 e 1. Di default è 1
+    si è scelto di usare 0.85.
+    \item \textbf{colsample\_bytree}: la frazione di feature da usare per addestrare
+    ogni albero che deve essere compresa tra 0 e 1. Di default è 1.
+    Si è deciso di usare 0.85 anche qui.
+    \item \textbf{gamma}: il valore minimo di perdita richiesta per fare una divisione.
+    Di default è 0 e si è deciso di lasciarlo così.
+    \item \textbf{reg\_alpha}: il termine di regolarizzazione L1 da applicare.
+    più alto è il valore, più il modello sarà semplice e meno suscettibile all'overfitting.
+    Di default è 0 e si è deciso di usare 0.1.
+    \item \textbf{reg\_lambda}: il termine di regolarizzazione L2 da applicare.
+    Come per reg\_alpha, più alto è il valore, più il modello sarà semplice.
+    Di default è 1 e si è lasciato così.
+    \item \textbf{random\_state}: il seed per la generazione casuale dei dati.
+    \item \textbf{eta}: il tasso di apprendimento del modello.
+    Di default è 0.3. Dopo vari test
+    non si è notato alcun miglioramento perciò 
+    si è deciso di usare il valore di default.
+\end{itemize}
+
+Inizialmente si è addestrato il modello con la sola 
+CPU, impiegando circa 7 minuti. 
+Successivamente avendo notato che il modello
+poteva essere addestrato anche con la GPU, si è deciso di usarla
+e i tempi di addestramento sono scesi drasticamente,
+impiegando all'incirca 1 minuto per un addestramento completo.
+I risultati sono leggermente migliori rispetto al modello Random Forest
+con un accuretezza di quasi il 93\%. L'F1-Score, come per il Random Forest,
+risulta maggiore per i domini legit,
+con uno 0.92 per i domini DGA e 0.93 per i domini legittimi,
+come si può vedere nella \cref{fig:XGBoost results}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/XGBoost_results.png}
+    \caption{Risultati del modello XGBoost}
+    \label{fig:XGBoost results}
+\end{figure}
+
+Dalla Confusion Matrix \ref{fig:XGBoost confusion matrix} si può vedere che il modello ha classificato
+il 3\% in più di false negative rispetto ai false positive.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/XGBoost_conf_matr.png}
+    \caption{Confusion Matrix del modello XGBoost}
+    \label{fig:XGBoost confusion matrix}
+\end{figure}
+
+
 
 
 
