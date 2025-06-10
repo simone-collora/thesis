@@ -36,7 +36,37 @@
 \nocite{*}
 
 \begin{abstract}	
-Max 2000 characters, strict.
+%Max 2000 characters, strict.
+I Domain Generation Algorithms (DGA) sono algoritmi che generano domini in modo pseudo casuale.
+Questi domini vengono utilizzati dai malware per comunicare con i loro server,
+i Command and Control servers (C\&C).
+I DGA sono stati sviluppati per superare le limitazioni
+dei metodi precedenti come i domini hard-coded, i quali
+sono facilmente bloccabili e prevedibili.
+I DGA, invece, sono difficili da bloccare e quasi impossibili da prevedere,
+poiché i domini generati sono migliaia e pseudo casuali.
+Lo scopo di questo progetto di tesi è quello di analizzare
+e sviluppare soluzioni per la rilevazione dei DGA attraverso il Machine Learning, cercando
+di creare un modello in grado di rilevarli e distinguerli
+dai domini legit.
+Sono stati analizzati e sperimentati quattro modelli di Machine Learning
+per la rilevazione dei DGA, due modelli classici 
+basati su tecniche di feature extraction, ovvero le caratteristiche dei domini,
+e due basati su tecniche di Deep Learning, ovvero le reti neurali che imparano direttamente dai dati.
+I due modelli di Machine Learning basati su feature extraction
+sono il Random Forest e l'XGBoost, mentre i due modelli
+di Deep Learning sono la Long Short-Term Memory (LSTM) e la Bidirectional LSTM.
+I modelli sono stati addestrati e testati su un dataset di domini
+DGA e legit diviso in training, validation e test set.
+I risultati sono basati su diverse metriche e
+sono stati confrontati tra i vari modelli.
+I modelli con risultati migliori sono stati
+quelli basati su deep learning con un'accuretezza del 99\% e una differenza di accuratezza del 7\%
+circa rispetto agli altri modelli,
+mentre, quelli più performanti in termini di tempo e risorse,
+sono stati quelli basati su feature extraction
+impiegando quasi 30 volte in meno rispetto ai modelli di deep learning
+e con un consumo di memoria molto inferiore.
 \end{abstract}
 
 
@@ -65,19 +95,24 @@ i computer infetti da malwares, i Botnets, permettendo
 all'attaccante di eseguire codice malevolo da remoto.
 Il malware, però, deve conoscere un indirizzo IP o un dominio
 per contattare il server. L'attaccante potrebbe
-inserire in modo bruto l'indirizzo IP del server nel codice del malware,
+inserire in modo hard-coded l'indirizzo IP del server nel codice del malware,
 ma questo metodo è facilmente rilevabile e bloccabile.
 Gli hackers, quindi, preferiscono utilizzare dei domini
 generati in modo pseudo casuale per nascondere i loro server chiamati
-\acrfull{DGA} servers. Negli ultimi anni, sono stati sviluppati
-vari metodi di Machine Learning per rilevare questi domini.
+\acrfull{DGA} servers.
+Questi algoritmi generano migliaia di domini al giorno
+che vengono poi utilizzati per contattare i server \acrshort{C&C}.
+rendendo difficile per i sistemi di protezione bloccarli.
+Negli ultimi anni sono stati sviluppati vari metodi di Machine Learning
+capaci di rilevare e bloccare i DGA in modo più efficace
+rispetto ai metodi tradizionali come le blacklist.
 
 
 
 \paragraph{Struttura della tesi}
 Il lavoro di tesi si dividerà in 3 capitoli. Nel primo
 capitolo verrano descritti concetti di base riguardanti \acrshort{DGA} e Botnets,
-e Machine Learning con una breve descrizione delle reti neurali e di alcuni
+e Machine Learning con una breve descrizione delle reti neurali e degli
 algoritmi usati. Nel secondo capitolo verrà descritto il progetto,
 i suoi obiettivi e i risultati ottenuti. Nell'ultimo capitolo
 verranno discusse le conclusioni e i possibili sviluppi futuri.
@@ -88,11 +123,40 @@ verranno discusse le conclusioni e i possibili sviluppi futuri.
 
 Di seguito sono descritti i concetti base su cui si basa il progetto.
 
-\section{Domain Name System}
-Il \textbf{Domain Name System} (DNS) è un sistema che
-traduce un nome di dominio in un indirizzo IP.
-
-
+\section{Domini e Domain Name System}
+Un \textbf{dominio} è un nome univoco che identifica un sito web.
+I domini sono composti da due parti principali
+ovvero il nome e l'estenzione del dominio.
+Il nome del dominio è la parte principale che identifica il sito web
+ad esempio \texttt{google} in \texttt{google.com}.
+L'estensione del dominio, invece, è la parte finale
+che identifica la provenienza del sito o lo scopo. Degli esempi possono essere
+\texttt{.com}, il più usato, per i siti commerciali,
+\texttt{.it} per i siti italiani, \texttt{.org} per le organizzazioni.
+Un dominio può essere registrato da chiunque tramite
+un \textbf{Registrar}, ovvero
+un'azienda che gestisce la registrazione dei domini.
+Il dominio sarà unico e non potrà essere registrato da nessun altro
+fino a quando esso non verrà rimosso o scadrà.
+Un dominio può essere registrato per un periodo di tempo
+che va da un minimo di un anno a un massimo di dieci anni.
+Un dominio può essere composto da lettere, numeri e trattini
+ma non può iniziare o finire con un trattino.
+Un dominio può essere composto da un massimo di 63 caratteri
+e non può contenere spazi o caratteri speciali e 
+può essere diviso in sottodomini, che sono
+parte del dominio principale e sono separati da un punto.
+Un esempio di sottodominio può essere \texttt{translate.google.com} in cui
+\texttt{translate} è il sottodominio di \texttt{google.com} per Google Translate.
+Il dominio solo però non basta per raggiungere un sito web.
+È necessario conoscere l'indirizzo IP
+del server che ospita il sito web. 
+Questo problema viene risolto dal Domain Name System. \hfill \break
+Il \textbf{Domain Name System} (più spesso abbreviato DNS)
+è un sistema che traduce i nomi di dominio in indirizzi IP.
+Quando un utente inserisce un dominio nel browser, il DNS
+cerca l'indirizzo IP associato a quel dominio
+e lo restituisce al browser che poi si connetterà al sito web desiderato.
 
 
 \section{Botnets e DGA}
@@ -681,7 +745,7 @@ I parametri che XGBoost prende in input sono:
     si è deciso di usare il valore di default.
 \end{itemize}
 
-Inizialmente si è addestrato il modello con la sola 
+\noindent Inizialmente si è addestrato il modello con la sola 
 CPU, impiegando circa 7 minuti. 
 Successivamente avendo notato che il modello
 poteva essere addestrato anche con la GPU, si è deciso di usarla
@@ -699,7 +763,7 @@ come si può vedere nella \cref{fig:XGBoost results}.
     \label{fig:XGBoost results}
 \end{figure}
 
-Dalla Confusion Matrix \ref{fig:XGBoost confusion matrix} si può vedere che il modello ha classificato
+\noindent Dalla Confusion Matrix \ref{fig:XGBoost confusion matrix} si può vedere che il modello ha classificato
 il 3\% in più di false negative rispetto ai false positive.
 \begin{figure}[H]
     \centering
@@ -709,13 +773,11 @@ il 3\% in più di false negative rispetto ai false positive.
 \end{figure}
 
 
-
-
-
-
 \section{Test con LSTM}
 Poiché LSTM è un tipo di rete neurale adatto per il riconoscimento di pattern
 ho deciso di usarlo per il progetto sia nella sua forma classica che in quella bidirezionale.
+A differenza dei modelli di Machine Learning precedenti,
+le LSTM non hanno bisogno delle features poiché esse imparano direttamente dai dati.
 Il modello però non è in grado di leggere direttamente i domini.
 Perciò bisogna convertire i domini in un formato leggibile dalla rete neurale e questo viene
 svolto tramite un processo chiamato \textbf{Tokenization}.
@@ -740,7 +802,7 @@ Esso può essere scelto in base
 alla complessità del problema o alla quantità di dati
 presenti nel dataset. In generale con troppi neuroni si rischia di
 andare in overfitting e con pochi il contrario. Dopo
-vari tentativi, 128 neuroni è sembrata la scelta migliore poichè
+vari tentativi, 128 neuroni è sembrata la scelta migliore poiché
 con più neuroni il modello non imparava, rimanendo bloccato con un accuracy di 0.5 circa. \hfil \break
 Dopo di che è stato aggiunto uno strato di dropout
 ovvero uno strato che disabilita casualmente
@@ -809,8 +871,8 @@ La maggior parte degli errori sono False Negative anche qui
     \label{fig:BLSTM confusion matrix}
 \end{figure}
 
-
-
+\chapter{Conclusioni}
+In questo progetto...
 
 % \chapter{Contribution}
 
@@ -826,13 +888,14 @@ La maggior parte degli errori sono False Negative anche qui
 %----------------------------------------------------------------------------------------
 
 \backmatter
-
+\cleardoublepage
+\phantomsection
 \bibliographystyle{IEEEtran} %prima era alpha
 \bibliography{bibliography}
 
-\begin{acknowledgements} % this is optional
- Optional. Max 1 page.
-\end{acknowledgements}
+% \begin{acknowledgements} % this is optional
+%  Optional. Max 1 page.
+% \end{acknowledgements}
 
 \chapter*{Ringraziamenti}
 \markboth{RINGRAZIAMENTI}{RINGRAZIAMENTI}
