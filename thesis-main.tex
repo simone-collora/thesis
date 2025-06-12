@@ -42,19 +42,21 @@ Questi domini vengono utilizzati dai malware per comunicare con i loro server,
 i Command and Control servers (C\&C).
 I DGA sono stati sviluppati per superare le limitazioni
 dei metodi precedenti come i domini hard-coded, i quali
-sono facilmente bloccabili e prevedibili.
-I DGA, invece, sono difficili da bloccare e quasi impossibili da prevedere,
-poiché i domini generati sono migliaia e pseudo casuali.
+sono prevedibili e facilmente bloccabili.
+I DGA, invece, sono quasi impossibili da prevedere e da bloccare con i metodi tradizionali,
+come le blacklist,
+poiché, i domini generati, sono migliaia e pseudo casuali.
 Lo scopo di questo progetto di tesi è quello di analizzare
 e sviluppare soluzioni per la rilevazione dei DGA attraverso il Machine Learning, cercando
 di creare un modello in grado di rilevarli e distinguerli
 dai domini legit.
-Sono stati analizzati e sperimentati quattro modelli di Machine Learning
-per la rilevazione dei DGA, due modelli classici 
-basati su tecniche di feature extraction, ovvero le caratteristiche dei domini,
-e due basati su tecniche di Deep Learning, ovvero le reti neurali che imparano direttamente dai dati.
-I due modelli di Machine Learning basati su feature extraction
-sono il Random Forest e l'XGBoost, mentre i due modelli
+Sono stati analizzati e sperimentati quattro algoritmi di Machine Learning
+per la rilevazione dei DGA, due algoritmi classici 
+basati su tecniche di feature extraction, ovvero le caratteristiche estratte dai dati(i domini nel nostro caso),
+e due basati su tecniche di Deep Learning, che quindi impiegano delle
+reti neurali capaci di imparare direttamente dai dati.
+I due algoritmi di Machine Learning basati su feature extraction
+sono il Random Forest e l'XGBoost, mentre i due algortimi
 di Deep Learning sono la Long Short-Term Memory (LSTM) e la Bidirectional LSTM.
 I modelli sono stati addestrati e testati su un dataset di domini
 DGA e legit diviso in training, validation e test set.
@@ -65,8 +67,7 @@ quelli basati su deep learning con un'accuretezza del 99\% e una differenza di a
 circa rispetto agli altri modelli,
 mentre, quelli più performanti in termini di tempo e risorse,
 sono stati quelli basati su feature extraction
-impiegando quasi 30 volte in meno rispetto ai modelli di deep learning
-e con un consumo di memoria molto inferiore.
+impiegando quasi 30 volte in meno rispetto ai modelli di deep learning.
 \end{abstract}
 
 
@@ -89,31 +90,35 @@ nel mondo moderno. Con il passare del tempo,
 i sistemi di protezione sono diventati sempre più sofisticati
 e potenti ma, allo stesso tempo, anche gli hackers 
 hanno sviluppato tecniche sempre più avanzate per eludere i sistemi di protezione.
-Tra queste vi è sicuramente l'uso di Botnets
-dei \acrfull{C&C} servers. I \acrshort{C&C} sono dei server che manipolano
-i computer infetti da malwares, i Botnets, permettendo
+Tra queste vi è sicuramente l'uso di Botnets e
+dei Command and Control(C\&C) servers. I C\&C sono dei server che manipolano una rete
+di computer infetti da malwares, chiamati Botnets, permettendo
 all'attaccante di eseguire codice malevolo da remoto.
 Il malware, però, deve conoscere un indirizzo IP o un dominio
 per contattare il server. L'attaccante potrebbe
 inserire in modo hard-coded l'indirizzo IP del server nel codice del malware,
 ma questo metodo è facilmente rilevabile e bloccabile.
 Gli hackers, quindi, preferiscono utilizzare dei domini
-generati in modo pseudo casuale per nascondere i loro server chiamati
-\acrfull{DGA} servers.
+generati in modo pseudo casuale da degli algoritmi per nascondere i loro server chiamati
+Domain Generation Algorithms(o DGA).
 Questi algoritmi generano migliaia di domini al giorno
-che vengono poi utilizzati per contattare i server \acrshort{C&C}.
-rendendo difficile per i sistemi di protezione bloccarli.
-Negli ultimi anni sono stati sviluppati vari metodi di Machine Learning
-capaci di rilevare e bloccare i DGA in modo più efficace
-rispetto ai metodi tradizionali come le blacklist.
+che vengono poi utilizzati dai malware per contattare i server C\&C,
+rendendo difficile per i sistemi di protezione bloccarli
+poiché appena un dominio viene bloccato, il malware passa semplicemente al prossimo dominio generato.
+I metodi tradizionali per bloccare i domini malevoli come le blacklist,
+risultano inefficaci per i DGA poiché i domini generati sono troppi
+ed è molto difficile e dispendioso risalire al seed usato per generare i domini
+tramite reverse engineering.
+Perciò, negli ultimi anni, sono stati sviluppati vari metodi di Machine Learning
+capaci di rilevare e bloccare i DGA in modo più efficace.
 
 
 
 \paragraph{Struttura della tesi}
-Il lavoro di tesi si dividerà in 3 capitoli. Nel primo
-capitolo verrano descritti concetti di base riguardanti \acrshort{DGA} e Botnets,
+La tesi si dividerà in 3 capitoli. Nel primo
+capitolo verrano descritti concetti di base riguardanti DNS, DGA e Botnets
 e Machine Learning con una breve descrizione delle reti neurali e degli
-algoritmi usati. Nel secondo capitolo verrà descritto il progetto,
+algoritmi utilizzati. Nel secondo capitolo verrà descritto il progetto,
 i suoi obiettivi e i risultati ottenuti. Nell'ultimo capitolo
 verranno discusse le conclusioni e i possibili sviluppi futuri.
 
@@ -125,8 +130,7 @@ Di seguito sono descritti i concetti base su cui si basa il progetto.
 
 \section{Domini e Domain Name System}
 Un \textbf{dominio} è un nome univoco che identifica un sito web.
-I domini sono composti da due parti principali
-ovvero il nome e l'estenzione del dominio.
+I domini sono composti da due parti principali, il nome e l'estenzione del dominio.
 Il nome del dominio è la parte principale che identifica il sito web
 ad esempio \texttt{google} in \texttt{google.com}.
 L'estensione del dominio, invece, è la parte finale
@@ -163,23 +167,23 @@ e lo restituisce al browser che poi si connetterà al sito web desiderato.
 
 \subsection{Botnets}
 
-I Botnets sono reti di computer infetti da malware, chiamati bot,
-che possono essere controllati da un attaccante, il botmaster.
+I \textbf{Botnets} sono reti di computer infetti da malware, chiamati bot,
+che possono essere controllati da uno o più hackers, chiamati \textbf{botmaster}.
 La vita di un botnet nella maggior parte dei casi è divisa in 4 fasi:
 \begin{enumerate}
     \item \textbf{Infezione e propagazione}: Questo è il primo
-    passaggio. L'attaccante cerca di infettare un computer
-    tramite vari metodi come email con link malevoli o \acrfull{P2P} sharing.
+    passaggio. L'hacker cerca di infettare un computer
+    tramite vari metodi come email con link malevoli o Peer-to-peer(P2P) sharing.
     Una volta infettato un dispositivo, il malware cerca di infettare
     altri dispositivi nella rete.
 
     \item \textbf{Rallying}: i bots cercano di contattare per la prima volta
-    il server \acrshort{C&C} per far capire all'attaccante
+    il server Command and Control(C\&C) per far capire all'hacker
     che l'attacco è andato a buon fine.
 
     \item \textbf{Commands and Reports}: il malware esegue le istruzioni
-    ricevute dal server \acrshort{C&C} e invia i risultati al botmaster.
-    I bots ascoltano continuamente il server \acrshort{C&C} 
+    ricevute dal server C\&C e invia i risultati al botmaster.
+    I bots ascoltano continuamente il server C\&C 
     o si connettono ad esso periodicamente. Appena ricevono
     un comando lo eseguono, inviano i risultati al botmaster
     e aspettano un nuovo comando.
@@ -187,7 +191,7 @@ La vita di un botnet nella maggior parte dei casi è divisa in 4 fasi:
     \item \textbf{Abbandono}: Quando un bot non è più utile o utilizzabile,
     il botmaster può decidere di abbandonarlo. Il botnet, invece,
     sarà completamente distrutto quando tutti i bot saranno
-    abbandonati o bloccati dalla vittima o quando il \acrshort{C&C} server
+    abbandonati o bloccati dalla vittima o quando il C\&C server
     verrà bloccato
 
 
@@ -202,9 +206,9 @@ La vita di un botnet nella maggior parte dei casi è divisa in 4 fasi:
 
 \subsection{Command and Control} 
 
-Il meccanismo del \acrshort{C&C} crea un canale di comunicazione
+Il meccanismo del Command and Control, spesso abbreviato in C\&C, crea un canale di comunicazione
 tra il botmaster e i bot. Questo è essenziale per il funzionamento
-del botnet. Ci sono tre tipi di server \acrshort{C&C}:
+del botnet. Ci sono tre tipi di server C\&C:
 
 \begin{itemize}
     \item \textbf{Centralizzati}: In questo tipo di server, il botmaster
@@ -213,22 +217,22 @@ del botnet. Ci sono tre tipi di server \acrshort{C&C}:
     Se il server centrale viene bloccato, tutti i bot non possono più
     ricevere comandi. Questo a sua volta è diviso in due categorie:
     \begin{itemize}
-        \item \textbf{IRC} : \acrfull{IRC} è un sistema di chat
+        \item \textbf{Internet Relay Chat (IRC)}: IRC è un sistema di chat
         usato per comunicare tra i bot e il botmaster in tempo reale.
         Questo era più usato nella prima generazione di botnet. 
-        I bot si connettono al server \acrshort{IRC} e aspettano
+        I bot si connettono al server IRC e aspettano
         i comandi dal botmaster. I bot seguono un approccio PUSH ovvero
         quando un bot si connette ad un determinato canale, esso rimane connesso.
         \item \textbf{HTTP / HTTPS}: Il più usato. Con questa tecnica, i bot usano un URL o IP
-        per contatattare il server \acrshort{C&C}. Qua invece i bot seguono
-        un approccio PULL. I bot si connettono al server \acrshort{C&C}
+        per contatattare il server C\&C. Qua invece i bot seguono
+        un approccio PULL. I bot si connettono al server C\&C
         periodicamente e controllano se ci sono nuovi comandi. Questo processo
         va ad intervalli regolari definiti dal botmaster.
     \end{itemize}
 
-    \item \textbf{Decentralizzati}: Questo tipo di \acrshort{C&C}
-    è basato su un sistema \acrshort{P2P} senza un server centrale. In questo modo,
-    computer infetti fanno sia da bot che da server \acrshort{C&C}.
+    \item \textbf{Decentralizzati}: Questo tipo di C\&C
+    è basato su un sistema P2P senza un server centrale. In questo modo,
+    computer infetti fanno sia da bot che da server.
     Questo metodo è più difficile da rilevare ma anche
     più complesso da implementare \cite{4804459}.
 
@@ -237,61 +241,125 @@ del botnet. Ci sono tre tipi di server \acrshort{C&C}:
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/Types-of-CC.png}
-    \caption{Esempio di server \acrshort{C&C}. (a) centralizzato, (b) decentralizzato \cite{6487169}}
+    \caption{Esempio di server C\&C. (a) centralizzato, (b) decentralizzato \cite{6487169}}
     \label{fig:command and control}
 \end{figure}
 
 \subsection{Domain Generation Algorithm}
 
-I \acrshort{DGA} sono algoritmi che generano migliaia di domini in modo pseudo casuale.
-Prima viene scelto un seed, di solito la data odierna
+I Domain Generation Algorithm (DGA) sono algoritmi che generano migliaia di domini in modo pseudo casuale.
+Prima viene scelto un seed, che può essere la data odierna
 o anche le previsioni meteo \cite{8621875} e, tramite
 un algoritmo di hashing, vengono generati i domini.
-Questi domini vengono poi utilizzati per contattare i server \acrshort{C&C}.
+Questi domini vengono poi utilizzati per contattare i server C\&C.
 Non tutti i domini generati però sono registrati.
 Il computer infetto, tramite i DNS locali, cercherà di tradurre
 un dominio in un indirizzo IP.
-Se non riesce a contattarlo con un determinato dominio,
+Se esso non riesce a contattare il server con un determinato dominio,
 proverà con il successivo finché non troverà
 un dominio valido che permetterà al malware di comunicare con
-il server \acrshort{C&C} \cite{8489147}.
+il server C\&C \cite{8489147}.
 In questo modo, diventa più difficile per i sistemi di protezione
 rilevare e bloccare i loro attacchi.
 Si potrebbe pensare di bloccare direttamente i domini tramite
 una blacklist ma questo metodo
 risulta inefficace poiché vengono generati migliaia di domini
 continuamente. Si pensi che Conficker C, un famoso malware
-che utilizza \acrshort{DGA}, è in grado di generare
+che utilizza DGA, è in grado di generare
 fino a 50.000 domini pseudo casuali al giorno \cite{978131}.
 Un altro modo per contrastare ciò
 potrebbe essere quello di fare reverse engineering
-del \acrshort{DGA} per capire quale seed viene utilizzato per generare i domini.
+del DGA per capire quale seed viene utilizzato per generare i domini.
 Questo però risulta lento e dispendioso e possibilmente inefficace \cite{8887881}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{figures/DGA example.jpg}
-    \caption{Esempio del funzionamento di un \acrshort{DGA} \cite{8887881}}
+    \caption{Esempio del funzionamento di un DGA \cite{8887881}}
     \label{fig:DGA example}
 \end{figure}
 
-Per contrastare i \acrshort{DGA}, sono stati sviluppati
+Per contrastare i DGA, sono stati sviluppati
 vari metodi di Machine Learning in grado di rilevare i domini generati.
 Questi metodi hanno due lati poisitivi:
 \begin{itemize}
     \item Non richiedono un lungo processo di reverse engineering.
-    \item Essendo l'AI una blackbox, è molto difficile
+    \item Essendo l'AI una blackbox, è molto difficile se non impossibile
     per gli hackers eseguire un reverse engineering del modello.
 \end{itemize}
 
 \section{Machine Learning}
-Il Machine Learning è una branca dell'informatica che punta
-a far ragionare le macchine come gli esseri umani, ovvero
-a svolgere compiti autonomamente senza essere programmati
-esplicitamente e migliorando le loro prestazioni con l'esperienza
-e i dati.
+Il machine learning è la branca dell'intelligenza artificiale che si occupa dello sviluppo
+di algoritmi e tecniche finalizzate all'apprendimento automatico mediante
+la statistica computazionale e l'ottimizzazione matematica.\cite{treccani2024}
 
+\subsection{Sviluppo di un modello di Machine Learning}
+Il primo passo per sviluppare un modello di Machine Learning è quello di
+raccogliere i dati in un dataset. Nel nostro caso, dovendo riconoscere se un dominio
+è lecito o DGA, il dataset conterrà
+entrambi i tipi di domini che potranno avere o no un etichetta, DGA o legit nel nostro caso,
+A seconda di come è strutturato il dataset possiamo avere vari tipi di allenamento:
 
+\begin{itemize}
+    \item \textbf{Supervised Learning}: È la tecnica più comune
+    per allenare i modelli \cite{ayodele2010types}. In questo tipo di apprendimento,
+    il modello viene addestrato su un dataset etichettato.
+    \item \textbf{Unsupervised Learning}: In questo tipo di apprendimento,
+    il modello, deve scoprire dei pattern o delle relazioni
+    senza avere nessuna etichetta. Il modello deve trovare
+    degli oggetti che condividono delle caratteristiche simili, chiamati
+    cluster
+    \item \textbf{Reinforcement Learning}: In questo tipo di apprendimento,
+    ogni azione ha un effetto nell'ambiente che può essere positivo
+    o negativo.
+\end{itemize}
+
+\noindent Si è soliti dividere il dataset in tre parti ovvero training set, validation set e test set.
+Il \textbf{training set} è il dataset su cui viene addestrato
+il modello, il \textbf{validation set} è una parte del training set
+utile per riconoscere se il modello è in grado di generalizzare
+su dati nuovi ovvero non va in overfitting o underfitting durante l'addestramento.
+il \textbf{test set}, invece, è il dataset
+su cui viene testata la precisione del modello.
+Per la divisione del dataset non esiste una regola fissa,
+ma solitamente il training set è più grande del validation set
+e del test set. Un esempio potrebbe essere 90\% training set, 10\% validation set
+e 10\% test set.
+Successivamente vengono inizializzati i parametri del modello
+che per un modello classico come il Random Forest
+possono essere il numero di alberi o il numero di features da usare.
+Per un modello di deep learning, invece, i parametri possono essere
+il numero di epoche, il numero di batch, il learning rate e il numero di neuroni per ogni layer.
+Un modello troppo semplice, con pochi alberi o pochi neuroni,
+potrebbe non essere in grado di apprendere i pattern
+nei dati (\textbf{Underfitting}), mentre al contrario,
+una modello troppo complesso potrebbe imparare
+troppo bene i dati e non generalizzare su dati nuovi
+(\textbf{Overfitting}).
+Dopo di che si passa alla fase vera e propria di addestramento.
+Per un modello classico dipende dal tipo di algoritmo usato.
+Per il random forest, ad esempio, viene creato un certo numero di alberi
+e, per ogni albero, viene calcolata la previsione
+che sarà la maggioranza delle previsioni degli alberi,
+mentre per XGBoost,
+viene calcolato l'errore del modello e viene creato un nuovo albero
+che cercherà di correggere l'errore del modello precedente ad ogni iterazione.
+Per i modelli di Deep Learning, invece, esso viene iterato per un certo numero di epoche su un batch di dati.
+Il numero di \textbf{epoche} è un iperparametro, ovvero un parametro che non cambia durante l'addestramento, che indica quante volte
+l'algoritmo di apprendimento deve passare attraverso il dataset di training\cite{brownlee2018difference}.
+Un \textbf{batch} è un sottoinsieme del training set dopo il quale il modello
+aggiorna i propri pesi. Ad esempio abbiamo un training set di 10000 dati
+e un batch size di 100. Ogni 100 dati il modello calcolerà
+l'output e la loss function, cioè la funzione che calcola
+la differenza tra l'output previsto e quello reale, e aggiornerà i pesi di conseguenza.
+Infine viene testato il modello sul test set e, se la precisione
+è soddisfacente, il modello potrà essere usato.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/Machine-learning-pipeline.png}
+    \caption{Pipeline di un modello di Machine Learning \cite{phdthesishamza}}
+    \label{fig:ML pipeline}
+\end{figure}
 
 \subsection{Reti Neurali}
 
@@ -304,12 +372,12 @@ Con le reti neurali artificiali, il funzionamento
 è analogo. A livello matematico, un neurone artificiale è composto principalmente
 da due componenti:
 \begin{itemize}
-    \item \textbf{Pesi}: i pesi(weight in inglese) sono valori numerici che
+    \item \textbf{Pesi}: i pesi(weights in inglese) sono valori numerici che
     aiutano ogni nodo della rete neurale a determinare
     l'importanza di un input. Usando i pesi, il neurone
     può decidere se un input è importante o meno.
     \item \textbf{Funzione di attivazione}: la funzione di attivazione del neurone è la funzione
-    che in input prende la sommatoria dei dati pesati con i pesi descritti in
+    che prende in input la sommatoria dei dati pesati con i pesi descritti in
     precedenza e produce un output che verrà poi inviato ad altri neuroni come
     input. Alcune delle funzioni di attivazione più comuni sono la funzione
     sigmoide e la funzione ReLU.
@@ -328,7 +396,8 @@ A sua volta una rete neurale è composta da vari strati:
     e quello che riceve l'input esterno. Poiché la rete neurale
     è un modello matematico, l'input dovrà essere
     un vettore numerico. Questo vale anche se l'input da esaminare
-    è una stringa di caratteri, come nel nostro caso.
+    è una stringa di caratteri. In questo caso la stringa va convertita in un vettore numerico
+    come vedremo in seguito.
     \item \textbf{Hidden Layer}: questo è lo strato intermedio della rete neurale in cui avviene
     il processo di apprendimento.
     Questo strato elabora gli input ricevuti dallo strato precedente
@@ -336,7 +405,7 @@ A sua volta una rete neurale è composta da vari strati:
     \item \textbf{Output Layer}: Questo è l'ultimo strato della rete neurale.
     Fornisce i risultati finali ottenuti dalla rete neurale. Questo strato
     può essere composto anche da un solo neurone che fornisce
-    un output binario (0 o 1) come sarà nel nostro caso(DGA o non DGA)
+    un output binario (0 o 1) come sarà nel nostro caso(DGA o legit)
 \end{itemize}
 
 \begin{figure}[H]
@@ -348,10 +417,10 @@ A sua volta una rete neurale è composta da vari strati:
 
 Abbiamo inoltre vari tipi di reti neurali:
 \begin{itemize}
-    \item \textbf{Reti Neurali Feedforward}: Una rete Feedforward
+    \item \textbf{Reti Neurali Feedforward(FNN)}: Una rete Feedforward
     elabora le informazioni in un solo verso. Non ha né cicli
     né memoria delle informazioni passate. Questo tipo di rete
-    è usato principalmente per riconoscimento di pattern o classificazioni
+    è usato ad esempio per il riconoscimento di pattern.
     \item \textbf{Reti Neurali Ricorrenti (RNN)}:
     A differenza di una rete Feedforward, in una RNN 
     i neuroni possono andare anche a formare dei cicli. 
@@ -367,78 +436,11 @@ Abbiamo inoltre vari tipi di reti neurali:
     \cite{Goodfellow-et-al-2016}.
 \end{itemize}
 
-\subsection{Sviluppo di una rete neurale}
-Il primo passo per sviluppare una rete neurale è quello di
-raccogliere i dati in un dataset. Nel nostro caso, dovendo riconoscere se un dominio
-è lecito o \acrshort{DGA}, il dataset conterrà
-entrambi i tipi di domini che potranno avere un etichetta, DGA o legit nel nostro caso, o no. Questi come detto in precedenza,
-dovranno essere convertiti in un vettore numerico. A seconda di come
-è strutturato il dataset possiamo avere vari tipi di allenamento:
-
-\begin{itemize}
-    \item \textbf{Supervised Learning}: È la tecnica più comune
-    per allenare le reti neurali \cite{ayodele2010types}. In questo tipo di apprendimento,
-    il modello viene addestrato su un dataset etichettato.
-    \item \textbf{Unsupervised Learning}: In questo tipo di apprendimento,
-    il modello, deve scoprire dei pattern o delle relazioni
-    senza avere nessuna etichetta. Il modello deve trovare
-    degli oggetti che condividono delle caratteristiche simili, chiamati
-    cluster
-    \item \textbf{Reinforcement Learning}: In questo tipo di apprendimento,
-    ogni azione ha un effetto nell'ambiente che può essere positivo
-    o negativo.
-\end{itemize}
-
-\noindent Si è soliti dividere il dataset in tre parti ovvero training set, validation set e test set.
-Il \textbf{training set} è il dataset su cui viene addestrato
-il modello, il \textbf{validation set} è una parte del training set
-utile per riconoscere se il modello è in grado di generalizzare
-su dati nuovi ovvero non va in overfitting o underfitting.
-il \textbf{test set}, invece, è il dataset
-su cui viene testata la precisione del modello.
-Per la divisione del dataset non esiste una regola fissa,
-ma solitamente il training set è più grande del validation set
-e del test set. Un esempio potrebbe essere 70\% training set, 15\% validation set
-e 15\% test set.
-Successivamente viene deciso il tipo di rete 
-neurale da usare, il numero di layers e il numero
-di neuroni per ognuno di essi. Una rete troppo semplice
-potrebbe non essere in grado di apprendere i pattern
-nei dati (\textbf{Underfitting}), mentre al contrario,
-una rete troppo complessa potrebbe imparare
-troppo bene di dati e non generalizzare su dati nuovi
-(\textbf{Overfitting}). Come detto in precedenza, il validation
-set ci aiuta a capire se il modello va in overfitting o underfitting.
-Successivamente vengono inizializzati i pesi di ogni neurone.
-Questi possono essere inizializzati in modo casuale
-o con altre tecniche più avanzate ad esempio
-la \textbf{He Initialization} \cite{he2015delving}
-(opzione di default quando si inizializza 
-con attivazione ReLU).
-Dopo di che si passa alla fase vera e propria di addestramento.
-Il modello viene iterato per un certo numero di epoche su un batch di dati.
-Un \textbf{batch} è un sottoinsieme del training set dopo il quale il modello
-aggiorna i propri pesi. Ad esempio abbiamo un training set di 10000 dati
-e un batch size di 100. Ogni 100 dati il modello calcolerà
-l'output e la loss function, cioè la funzione che calcola
-la differenza tra l'output previsto e quello reale,
-e aggiornerà i pesi.
-Il numero di epoche è un iperparametro che indica quante volte
-l'algoritmo di apprendimento deve passare attraverso il dataset di training\cite{brownlee2018difference}.
-Infine viene testato il modello sul test set e, se la precisione
-è soddisfacente, il modello potrà essere usato.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=.8\linewidth]{figures/Machine-learning-pipeline.png}
-    \caption{Pipeline di un modello di Machine Learning \cite{phdthesishamza}}
-    \label{fig:ML pipeline}
-\end{figure}
-
 \section{Algoritmi di Machine Learning adatti per DGA}
 
 Ora che abbiamo visto i concetti di base del Machine Learning, delle reti neurali
-e dei \acrshort{DGA}, vediamo alcuni degli algoritmi che possono essere usati
-per rilevare i domini generati da \acrshort{DGA}.
+e dei DGA, vediamo alcuni degli algoritmi che possono essere usati
+per rilevare i domini generati da DGA.
 
 \subsection{Random Forest}
 
@@ -483,13 +485,12 @@ Questa tecnica è chiamata \textbf{Bagging} o Bootstrap Aggregating.
 
 \subsection{XGBoost}
 XGBoost, abbreviazione di eXtreme Gradient Boosting, è un algoritmo di Machine Learning
-che, come il Random Forest, è un algoritmo esamble che combina più alberi decisionali.
+esamble che combina più alberi decisionali come il Random Forest.
 La differenza principale tra i due algoritmi è che XGBoost usa un approccio
 \textbf{Boosting} invece che Bagging.
 Il Boosting è un metodo che combina più modelli
 messi in sequenza, in modo che ogni modello successivo
 cerchi di correggere gli errori del modello precedente.
-\cite{Xgboost2016}
 Il Boosting funziona nel seguente modo:
 \begin{enumerate}
     \item Viene creato un albero decisionale e viene allenato sui dati.
@@ -498,8 +499,10 @@ Il Boosting funziona nel seguente modo:
     \item Si ripete il processo fino a quando non verrà soddisfatto un criterio di stop.
 \end{enumerate}
 
-
-
+La differenza tra il boosting standard e XGBoost è che quest'ultimo
+risulta più veloce, più performante e meno soggetto all'overfitting
+grazie all'uso di tecniche di regolarizzazione come il L1 e L2 regularization
+e la parallelizzazione del processo di addestramento \cite{Xgboost2016}
 
 
 \subsection{Long Short Term Memory (LSTM)}
@@ -534,9 +537,8 @@ La struttura delle LSTM è composta nel seguente modo:
 
 \noindent Oltre alle LSTM tradizionali abbiamo anche le \textbf{BLSTM} (Bidirectional LSTM) che sono
 composte da due LSTM, che elaborano i dati in due direzioni diverse.
-A differenza del Random Forest, le LSTM usano un approccio featureless e imparano
-direttamente dai dati. Alcuni usi delle LSTM sono ad esempio
-il riconoscimento vocale o la traduzione automatica.
+A differenza del Random Forest e del XGBoost, le LSTM usano un approccio featureless e imparano
+direttamente dai dati.
 
 \begin{figure}[H]
     \centering
@@ -546,14 +548,12 @@ il riconoscimento vocale o la traduzione automatica.
 \end{figure}
 
 
-
-
 \chapter{Progetto}
 Il progetto ha come obiettivo quello di sviluppare un sistema
-di rilevamento di domini generati da \acrshort{DGA} tramite
+di rilevamento di domini generati da DGA tramite
 l'uso di tecniche di Machine Learning. 
 Per il dataset ho deciso di usare il dataset di YangYang \cite{dataset_yangyang}
-che contiene circa 1.5 milioni di domini \acrshort{DGA} e circa 1.5 milioni di domini legittimi.
+che contiene circa 1.5 milioni di domini DGA e circa 1.5 milioni di domini legittimi.
 
 \section{Linguaggi e librerie usate}
 Per il progetto è stato usato il linguaggio Python poiché è il più usato
@@ -577,7 +577,6 @@ adatte a questo scopo. Le librerie usate sono:
 Per valutare le prestazioni dei vari modelli si è deciso di usare i seguenti
 parametri:
 Accuracy, Pecision, Recall, F1-Score e Confusion Matrix. \hfill \break
-Nel nostro modello un DGA ha come label 1(positivo) mentre un dominio legittimo ha come label 0 (negativo).
 L'\textbf{Accuracy} è il rapporto del numero di predizioni
 corrette sul numero totale di predizioni effettuate.
 La formula è la seguente:
@@ -676,7 +675,8 @@ rischiavano di portare a un overfitting del modello.
     \caption{Parte del dataset con i domini e loro features}
     \label{fig:RF feature}
 \end{figure}
-\noindent Dopo vari test si è raggiunta un accuratezza del 91\% ma
+\noindent Il modello ha impiegato circa 10 minuti per l'addestramento e, dopo vari test,
+si è raggiunta un accuratezza del 91\% ma
 con risultati peggiori nel riconoscimento dei DGA rispetto ai legit come si può vedere nella \cref{fig:RF results}.
 
 \begin{figure}[H]
@@ -697,7 +697,7 @@ più di 5000 False Negative ovvero domini DGA classificati come legittimi rispet
 \end{figure}
 
 \section{Test con XGBoost}
-XGBoost come Random Forest non ha bisogno dei dati convertiti
+XGBoost come Random Forest non ha bisogno dei dati convertiti in vettori numerici
 ma delle loro features.
 Le features usate sono state le stesse del modello Random Forest.
 I parametri che XGBoost prende in input sono:
@@ -745,10 +745,9 @@ I parametri che XGBoost prende in input sono:
     si è deciso di usare il valore di default.
 \end{itemize}
 
-\noindent Inizialmente si è addestrato il modello con la sola 
-CPU, impiegando circa 7 minuti. 
+\noindent Inizialmente si è addestrato il modello con i setting base, impiegando circa 7 minuti. 
 Successivamente avendo notato che il modello
-poteva essere addestrato anche con la GPU, si è deciso di usarla
+poteva essere addestrato anche con la GPU e supportando la parallelizzazione, si è deciso di usarla
 e i tempi di addestramento sono scesi drasticamente,
 impiegando all'incirca 1 minuto per un addestramento completo.
 I risultati sono leggermente migliori rispetto al modello Random Forest
@@ -774,7 +773,7 @@ il 3\% in più di false negative rispetto ai false positive.
 
 
 \section{Test con LSTM}
-Poiché LSTM è un tipo di rete neurale adatto per il riconoscimento di pattern
+Poiché LSTM è adatto anche per il riconoscimento di pattern
 ho deciso di usarlo per il progetto sia nella sua forma classica che in quella bidirezionale.
 A differenza dei modelli di Machine Learning precedenti,
 le LSTM non hanno bisogno delle features poiché esse imparano direttamente dai dati.
@@ -803,7 +802,7 @@ alla complessità del problema o alla quantità di dati
 presenti nel dataset. In generale con troppi neuroni si rischia di
 andare in overfitting e con pochi il contrario. Dopo
 vari tentativi, 128 neuroni è sembrata la scelta migliore poiché
-con più neuroni il modello non imparava, rimanendo bloccato con un accuracy di 0.5 circa. \hfil \break
+con più neuroni il modello non imparava, rimanendo bloccato con un accuracy di 0.5(50\%) circa. \hfil \break
 Dopo di che è stato aggiunto uno strato di dropout
 ovvero uno strato che disabilita casualmente
 un certo numero di neuroni durante l'addestramento 
@@ -813,14 +812,14 @@ Dopo è presente un altro strato LSTM come il primo e un dropout
 e uno strato con attivazione relu con 64 neuroni che serve
 a catturare pattern più complessi. Inizialmente
 si era provato senza questo strato ma 
-il modello aveva una precisione inferiore anche se di poco. Infine
+il modello aveva una precisione inferiore di circa il 5\%. Infine
 l'ultimo è uno strato denso con attivazione sigmoide
 che serve a classificare i dati in due classi, DGA e non DGA.
 Per il training sono state scelte inizialmente 5 e poi 10 epoch.
-Il modello però andava in overfitting, quindi si è deciso di aumentare
+Il modello però non riusciva a generalizzare, quindi si è deciso di aumentare
 il numero di epoche a 50 e di usare l'early stopping, un metodo per interrompere
 l'addestramento quando il modello non migliora più e per evitare l'overfitting. Alla
-fine il modello l'addestramento si è fermato all'epoch 26 impiegando circa 30 minuti e poco più di 1 minuto per epoca.
+fine l'addestramento si è fermato all'epoch 26 impiegando circa 30 minuti e poco più di 1 minuto per epoca.
 Il modello raggiunge il 99\% di accuracy e un alto F1-Score nel riconoscimento di entrambi i tipi di domini,
 come si può vedere nella \cref{fig:LSTM results}.
 
@@ -850,6 +849,7 @@ i pattern nei dati.
 Come nelle LSTM aumentare o dimunire il numero di neuroni
 non ha avuto effetti positivi sul modello perciò si è deciso di usare anche qui
 128 neuroni per ogni strato BLSTM e uno denso con attivazione relu con 64 neuroni.
+Le epoche scelte sono anche qui 50 con early stopping.
 Le tempistiche di addestramento, però, sono risultate
 maggiori rispetto alle LSTM classiche, impiegando circa 4 minuti ad epoca e circa 1 ora e 10 minuti per 22 epochs totali.
 I risultati sono stati molto simili a quelli delle LSTM come si può vedere nella \cref{fig:BLSTM results}.
