@@ -43,15 +43,15 @@ i Command and Control servers (C\&C).
 I DGA sono stati sviluppati per superare le limitazioni
 dei metodi precedenti come i domini hard-coded, i quali
 sono prevedibili e facilmente bloccabili.
-I DGA, invece, sono quasi impossibili da prevedere e da bloccare con i metodi tradizionali,
+I domini DGA, invece, sono quasi impossibili da prevedere e da bloccare con i metodi tradizionali,
 come le blacklist,
 poiché, i domini generati, sono migliaia e pseudo casuali.
 Lo scopo di questo progetto di tesi è quello di analizzare
-e sviluppare soluzioni per la rilevazione dei DGA attraverso il Machine Learning, cercando
+e sviluppare soluzioni per la rilevazione dei domini DGA attraverso il Machine Learning, cercando
 di creare un modello in grado di rilevarli e distinguerli
 dai domini legit.
 Sono stati analizzati e sperimentati quattro algoritmi di Machine Learning
-per la rilevazione dei DGA, due algoritmi classici 
+per la rilevazione dei domini DGA, due algoritmi classici 
 basati su tecniche di feature extraction, ovvero le caratteristiche estratte dai dati(i domini nel nostro caso),
 e due basati su tecniche di Deep Learning, che quindi impiegano delle
 reti neurali capaci di imparare direttamente dai dati.
@@ -65,9 +65,9 @@ sono stati confrontati tra i vari modelli.
 I modelli con risultati migliori sono stati
 quelli basati su deep learning con un'accuretezza del 99\% e una differenza di accuratezza del 7\%
 circa rispetto agli altri modelli,
-mentre, quelli più performanti in termini di tempo e risorse,
+mentre, quelli più performanti in termini di tempo,
 sono stati quelli basati su feature extraction
-impiegando quasi 30 volte in meno rispetto ai modelli di deep learning.
+impiegando più di 30 volte in meno rispetto ai modelli di deep learning.
 \end{abstract}
 
 
@@ -116,7 +116,7 @@ capaci di rilevare e bloccare i DGA in modo più efficace.
 
 \paragraph{Struttura della tesi}
 La tesi si dividerà in 3 capitoli. Nel primo
-capitolo verrano descritti concetti di base riguardanti DNS, DGA e Botnets
+capitolo verrano descritti concetti di base riguardanti Domini e DNS, DGA e Botnets
 e Machine Learning con una breve descrizione delle reti neurali e degli
 algoritmi utilizzati. Nel secondo capitolo verrà descritto il progetto,
 i suoi obiettivi e i risultati ottenuti. Nell'ultimo capitolo
@@ -138,7 +138,7 @@ che identifica la provenienza del sito o lo scopo. Degli esempi possono essere
 \texttt{.com}, il più usato, per i siti commerciali,
 \texttt{.it} per i siti italiani, \texttt{.org} per le organizzazioni.
 Un dominio può essere registrato da chiunque tramite
-un \textbf{Registrar}, ovvero
+un \textbf{registrar}, ovvero
 un'azienda che gestisce la registrazione dei domini.
 Il dominio sarà unico e non potrà essere registrato da nessun altro
 fino a quando esso non verrà rimosso o scadrà.
@@ -298,7 +298,7 @@ Il primo passo per sviluppare un modello di Machine Learning è quello di
 raccogliere i dati in un dataset. Nel nostro caso, dovendo riconoscere se un dominio
 è lecito o DGA, il dataset conterrà
 entrambi i tipi di domini che potranno avere o no un etichetta, DGA o legit nel nostro caso,
-A seconda di come è strutturato il dataset possiamo avere vari tipi di allenamento:
+a seconda di come è strutturato il dataset possiamo avere vari tipi di allenamento:
 
 \begin{itemize}
     \item \textbf{Supervised Learning}: È la tecnica più comune
@@ -329,7 +329,7 @@ Successivamente vengono inizializzati i parametri del modello
 che per un modello classico come il Random Forest
 possono essere il numero di alberi o il numero di features da usare.
 Per un modello di deep learning, invece, i parametri possono essere
-il numero di epoche, il numero di batch, il learning rate e il numero di neuroni per ogni layer.
+il numero di epoche, il numero di batch e il numero di neuroni per ogni layer.
 Un modello troppo semplice, con pochi alberi o pochi neuroni,
 potrebbe non essere in grado di apprendere i pattern
 nei dati (\textbf{Underfitting}), mentre al contrario,
@@ -338,12 +338,12 @@ troppo bene i dati e non generalizzare su dati nuovi
 (\textbf{Overfitting}).
 Dopo di che si passa alla fase vera e propria di addestramento.
 Per un modello classico dipende dal tipo di algoritmo usato.
-Per il random forest, ad esempio, viene creato un certo numero di alberi
-e, per ogni albero, viene calcolata la previsione
-che sarà la maggioranza delle previsioni degli alberi,
-mentre per XGBoost,
-viene calcolato l'errore del modello e viene creato un nuovo albero
-che cercherà di correggere l'errore del modello precedente ad ogni iterazione.
+Per il random forest, ad esempio, viene creato un certo numero di alberi. ognuno con una parte casuale del training set
+e viene calcolata la previsione di ogni albero.
+Il risultato sarà la maggioranza delle previsioni degli alberi o la media qualora si tratti di un problema di regressione.
+Per XGBoost, invece, viene creato un albero e
+viene calcolato l'errore del modello e, successivamente, verrà creato un nuovo albero
+che cercherà di correggere l'errore del modello precedente e questo fino a $n$ alberi.
 Per i modelli di Deep Learning, invece, esso viene iterato per un certo numero di epoche su un batch di dati.
 Il numero di \textbf{epoche} è un iperparametro, ovvero un parametro che non cambia durante l'addestramento, che indica quante volte
 l'algoritmo di apprendimento deve passare attraverso il dataset di training\cite{brownlee2018difference}.
@@ -396,7 +396,7 @@ A sua volta una rete neurale è composta da vari strati:
     e quello che riceve l'input esterno. Poiché la rete neurale
     è un modello matematico, l'input dovrà essere
     un vettore numerico. Questo vale anche se l'input da esaminare
-    è una stringa di caratteri. In questo caso la stringa va convertita in un vettore numerico
+    è una stringa di caratteri. In questo caso, quindi, la stringa va convertita in un vettore numerico
     come vedremo in seguito.
     \item \textbf{Hidden Layer}: questo è lo strato intermedio della rete neurale in cui avviene
     il processo di apprendimento.
@@ -469,7 +469,7 @@ Per prima cosa vengono creati $n$ alberi decisionali, ognuno
 contenente una parte casuale del training set. Inoltre
 ogni albero decisionale viene addestrato su un sottoinsieme casuale
 di feature. Dopo di che, ogni albero fa la sua previsione,
-e la previsione viene fatta in base a ciò che la maggior parte
+e la previsione finale viene fatta in base a ciò che la maggior parte
 degli alberi ha previsto se si tratta di un problema di classificazione mentre, qualora si trattasse di un problema di regressione,
 la previsione finale sarà la media delle previsioni di tutti gli alberi.
 Questa tecnica è chiamata \textbf{Bagging} o Bootstrap Aggregating.
@@ -499,8 +499,8 @@ Il Boosting funziona nel seguente modo:
     \item Si ripete il processo fino a quando non verrà soddisfatto un criterio di stop.
 \end{enumerate}
 
-La differenza tra il boosting standard e XGBoost è che quest'ultimo
-risulta più veloce, più performante e meno soggetto all'overfitting
+\noindent La differenza tra il boosting standard e XGBoost è che quest'ultimo
+risulta più performante e meno soggetto all'overfitting
 grazie all'uso di tecniche di regolarizzazione come il L1 e L2 regularization
 e la parallelizzazione del processo di addestramento \cite{Xgboost2016}
 
