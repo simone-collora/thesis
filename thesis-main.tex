@@ -7,6 +7,8 @@
 \usepackage{acronym}
 \usepackage[acronym]{glossaries}
 \usepackage{float}
+\usepackage{url}
+\def\UrlBreaks{\do\/\do-\do\&\do.\do:}
 
 \school{\unibo}
 \programme{Corso di Laurea Triennale in Ingegneria e Scienze Informatiche}
@@ -110,10 +112,7 @@ risultano inefficaci per i DGA poiché i domini generati sono troppi
 ed è molto difficile e dispendioso risalire al seed usato per generare i domini
 tramite reverse engineering.
 Perciò, negli ultimi anni, sono stati sviluppati vari metodi di Machine Learning
-capaci di rilevare e bloccare i DGA in modo più efficace.
-
-
-
+capaci di rilevare e bloccare i DGA in modo più efficace. \vfill
 \paragraph{Struttura della tesi}
 La tesi si dividerà in 3 capitoli. Nel primo
 capitolo verrano descritti concetti di base riguardanti Domini e DNS, DGA e Botnets
@@ -160,13 +159,10 @@ Il \textbf{Domain Name System} (più spesso abbreviato DNS)
 è un sistema che traduce i nomi di dominio in indirizzi IP.
 Quando un utente inserisce un dominio nel browser, il DNS
 cerca l'indirizzo IP associato a quel dominio
-e lo restituisce al browser che poi si connetterà al sito web desiderato.
-
+e lo restituisce al browser che poi si connetterà al sito web desiderato. \raggedbottom
 
 \section{Botnets e DGA}
-
 \subsection{Botnets}
-
 I \textbf{Botnets} sono reti di computer infetti da malware, chiamati bot,
 che possono essere controllati da uno o più hackers, chiamati \textbf{botmaster}.
 La vita di un botnet nella maggior parte dei casi è divisa in 4 fasi:
@@ -879,7 +875,19 @@ La maggior parte degli errori sono False Negative anche qui
 \end{figure}
 
 \chapter{Conclusioni}
-In questo progetto...
+In questo progetto di tesi sono stati analizzati e sviluppati
+vari modelli di Machine Learning per il riconoscimento
+di domini generati da DGA.
+Il risultato migliore è stato ottenuto con i modelli basati sul 
+Deep Learning, ovvero le LSTM e le BLSTM,
+che hanno raggiunto un'accuratezza del 99\% e un F1-Score
+di 0.99 per entrambi i tipi di domini.
+I modelli di Machine Learning basati su Feature Extraction, come il Random Forest e XGBoost,
+hanno raggiunto un'accuratezza del 91\% e 93\% rispettivamente
+quindi dimostrandosi meno precisi ma allo stesso tempo
+più veloci nell'addestramento e nell'esecuzione.
+Il progetto ha dimostrato che le reti neurali ricorrenti
+sono adatte per il riconoscimento di pattern nei dati.
 
 % \chapter{Contribution}
 
