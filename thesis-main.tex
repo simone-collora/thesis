@@ -567,12 +567,13 @@ adatte a questo scopo. Le librerie usate sono:
     \item \textbf{Numpy}: libreria per il calcolo scientifico e l'elaborazione di array.
     \item \textbf{math}: libreria per le funzioni matematiche di base.
     \item \textbf{Scikit-learn}: libreria per il Machine Learning che offre vari algoritmi
-    e strumenti per la valutazione dei modelli Nel nostro caso è stata usata per 
+    e strumenti per la valutazione dei modelli. Nel nostro caso è stata usata per 
     la divisione del dataset in training, validation e test set,
     per l'implementazione del modello Random Forest e per il calcolo delle metriche di valutazione.
     \item \textbf{XGBoost}: libreria per l'implementazione dell'algoritmo XGBoost.
-    \item \textbf{Tensorflow e Keras}: librerie per la creazione di reti neurali. Usate per la
-    tokenization dei domini e per l'implementazione delle LSTM e BLSTM.
+    \item \textbf{Tensorflow e Keras}: librerie per la creazione di reti neurali. Un tempo erano due librerie
+    separate ma dal 2017 Keras è parte integrante di Tensorflow. 
+    Usate per la tokenization dei domini e per l'implementazione delle LSTM e BLSTM.
     \item \textbf{Matplotlib}: libreria per la visualizzazione dei dati e per la creazione di grafici.
 \end{itemize}
 
@@ -624,9 +625,11 @@ quali classi sono state classificate correttamente e quali no e la quantità pre
     \label{fig:confusion matrix}
 \end{figure}
 
-\section{Test con Random Forest}
+\section{Progettazione con Random Forest}
 
 Il primo algoritmo testato è stato il Random Forest.
+Per implementarlo si è usata la classe \texttt{RandomForestClassifier} della libreria
+\texttt{scikit-learn} \cite{scikit_learn_rf}.
 Qui non abbiamo bisogno di convertire i domini in
 altri formati poiché il modello prenderà
 come dati non il dominio in sé ma le sue caratteristiche(o features).
@@ -649,11 +652,14 @@ I parametri che prende il modello sono:
     \item \textbf{max\_features}: il numero massimo di feature da considerare
     per la divisione di un nodo. Di default è "sqrt" ovvero la radice quadrata
     del numero di feature.
+    \item \textbf{n\_jobs}: il numero di processi paralleli da usare per l'addestramento.
+    Di default è 1, ma si può impostare a -1 per usare tutti i processi disponibili, 
+    aumentando così la velocità di addestramento.
     \item \textbf{random\_state}: il seed per la generazione casuale dei dati.
     Di default è None, ma facendo così il modello resituirà risultati diversi.
     Perciò si è deciso di dargli un seed fisso.
 \end{itemize}
-A parte per il random\_state e il numero di alberi gli altri parametri sono stati lasciati
+A parte per il random\_state, il numero di alberi e n\_jobs, gli altri parametri sono stati lasciati
 con i valori di default poiché, dopo vari test non sono stati riscontrati grossi miglioramenti.
 Inizialmente sono state usate come features la lunghezza del dominio, il numero di vocali,
 il numero di consonanti, la quantità di numeri e l'entropia del dominio.
@@ -662,10 +668,10 @@ L'entropia misura la randomicità di una stringa e viene calcolata con la seguen
     Entropy = -\sum_{i=1}^{n} p_i \cdot \log_2(p_i)
 \end{equation}
 dove $p_i$ è la probabilità di ogni carattere nel dominio. \hfil \break
-Successivamente sono stati aggiunti altri parametri come il ratio tra consonanti e vocali,
+Successivamente sono stati aggiunte altre features come il ratio tra consonanti e vocali,
 il numero di trattini, l'entropia per bigramma, e il numero di consonanti e vocali consecutive.
-Random Forest possiede un metodo che permette di calcolare l'importanza di ogni feature nel modello
-chiamato \texttt{feature\_importances\_}
+\texttt{RandomForestClassifier}, inoltre, possiede un attributo che permette di calcolare l'importanza di ogni feature nel modello
+chiamato \texttt{feature\_importances\_}\footnote{In scikit-learn i metodi con il suffisso "\_" sono attributi che possono essere calcolati solo dopo l'addestramento del modello \cite{scikit_learn_underscore}}.
 Grazie ad esso si è notato che le features più importanti sono state
 l'entropia e quante vocali consecutive ci sono nel dominio.
 Alcune features come se il dominio contiene un numero all'inizio o alla fine
@@ -678,7 +684,9 @@ rischiavano di portare a un overfitting del modello.
     \caption{Parte del dataset con i domini e loro features}
     \label{fig:RF feature}
 \end{figure}
-\noindent Il modello ha impiegato circa 10 minuti per l'addestramento e, dopo vari test,
+
+\subsection{Test con Random Forest}
+Il modello ha impiegato circa 10 minuti per l'addestramento e, dopo vari test,
 si è raggiunta un accuratezza del 91\% ma
 con risultati peggiori nel riconoscimento dei DGA rispetto ai legit come si può vedere nella \cref{fig:RF results}.
 
@@ -699,10 +707,13 @@ più di 5000 False Negative ovvero domini DGA classificati come legittimi rispet
     \label{fig:RF confusion matrix}
 \end{figure}
 
-\section{Test con XGBoost}
+\section{Progettazione con XGBoost}
 XGBoost come Random Forest non ha bisogno dei dati convertiti in vettori numerici
 ma delle loro features.
-Le features usate sono state le stesse del modello Random Forest.
+Per implementarlo si è usata l'omonima libreria \texttt{XGBoost} \cite{xgboost_cl}.
+Le features usate sono state le stesse del modello Random Forest poiché,
+anche in questo caso, alcune features non davano miglioramenti o rischiavano
+di portare anche ad un overfitting del modello.
 I parametri che XGBoost prende in input sono:
 \begin{itemize}
     \item \textbf{n\_estimators}: il numero di alberi da creare.
@@ -753,6 +764,8 @@ Successivamente avendo notato che il modello
 poteva essere addestrato anche con la GPU e supportando la parallelizzazione, si è deciso di usarla
 e i tempi di addestramento sono scesi drasticamente,
 impiegando all'incirca 1 minuto per un addestramento completo.
+
+\subsection{Test con XGBoost}
 I risultati sono leggermente migliori rispetto al modello Random Forest
 con un accuretezza di quasi il 93\%. L'F1-Score, come per il Random Forest,
 risulta maggiore per i domini legit,
@@ -775,9 +788,12 @@ il 3\% in più di false negative rispetto ai false positive.
 \end{figure}
 
 
-\section{Test con LSTM}
+\section{Progettazione LSTM}
 Poiché LSTM è adatto anche per il riconoscimento di pattern
-ho deciso di usarlo per il progetto sia nella sua forma classica che in quella bidirezionale.
+si è deciso di usarlo per il progetto sia nella sua forma classica che in quella bidirezionale.
+Per implementare le LSTM sia classiche che BLSTM si è usata la libreria \texttt{Keras} \cite{Keras}
+ora parte di Tensorflow
+e la sua classe \texttt{LSTM} per le LSTM classiche e \texttt{Bidirectional} per le BLSTM.
 A differenza dei modelli di Machine Learning precedenti,
 le LSTM non hanno bisogno delle features poiché esse imparano direttamente dai dati.
 Il modello però non è in grado di leggere direttamente i domini.
@@ -791,10 +807,10 @@ spesso senza parole di senso compiuto e con caratteri speciali come il punto o i
 per questo progetto si è deciso di usare la character tokenization.
 Per fare ciò si è usato il metodo \texttt{Tokenizer} di Keras.
 Per questo modello si è deciso di usare
-un modello sequenziale ovvero un modello in cui gli
+un modello sequenziale, in cui gli
 strati sono disposti in sequenza uno dopo l'altro. \hfil \break
 Il primo strato è uno strato di embedding che serve 
-per convertire i caratteri in vettori numerici poiché
+a convertire i caratteri in vettori numerici poiché,
 come detto in precedenza, le reti neurali
 possono leggere solo numeri. \hfil \break
 Successivamente nel modello è presente uno strato di LSTM
@@ -818,11 +834,22 @@ si era provato senza questo strato ma
 il modello aveva una precisione inferiore di circa il 5\%. Infine
 l'ultimo è uno strato denso con attivazione sigmoide
 che serve a classificare i dati in due classi, DGA e non DGA.
+Per incrementare ulteriormente la precisione del modello,
+si è usato anche il metodo reduce\_lr\_on\_plateau di Keras.
+Questo metodo riduce il learning rate appena il modello non migliora più
+permettendo al modello di convergere meglio. Nel nostro caso
+la patience, ovvero il numero di epoche prima di ridurre il learning rate,
+è stato impostato a 2 mentre il fattore di riduzione è 0.5.
+Per compilare il modello si è usato l'ottimizzatore Adam,
+poiché è risultato il migliore in termini di velocità e precisione.
 Per il training sono state scelte inizialmente 5 e poi 10 epoch.
 Il modello però non riusciva a generalizzare, quindi si è deciso di aumentare
 il numero di epoche a 50 e di usare l'early stopping, un metodo per interrompere
-l'addestramento quando il modello non migliora più e per evitare l'overfitting. Alla
+l'addestramento quando il modello non migliora più e per evitare l'overfitting. La patience in questo
+caso è stata impostata a 3. Alla
 fine l'addestramento si è fermato all'epoch 26 impiegando circa 30 minuti e poco più di 1 minuto per epoca.
+
+\subsection{Test con LSTM}
 Il modello raggiunge il 99\% di accuracy e un alto F1-Score nel riconoscimento di entrambi i tipi di domini,
 come si può vedere nella \cref{fig:LSTM results}.
 
@@ -843,7 +870,7 @@ False Negative ovvero domini DGA classificati come legittimi.
     \label{fig:LSTM confusion matrix}
 \end{figure}
 
-\section{Test con BLSTM}
+\section{Progettazione BLSTM}
 
 Come detto in precedenza, le BLSTM sono una variante delle LSTM che
 consentono di elaborare i dati in entrambe le direzioni.
@@ -852,9 +879,16 @@ i pattern nei dati.
 Come nelle LSTM aumentare o dimunire il numero di neuroni
 non ha avuto effetti positivi sul modello perciò si è deciso di usare anche qui
 128 neuroni per ogni strato BLSTM e uno denso con attivazione relu con 64 neuroni.
-Le epoche scelte sono anche qui 50 con early stopping.
-Le tempistiche di addestramento, però, sono risultate
-maggiori rispetto alle LSTM classiche, impiegando circa 4 minuti ad epoca e circa 1 ora e 10 minuti per 22 epochs totali.
+Le epoche scelte sono anche qui 50 con early stopping con patience settata a 3.
+Le tempistiche di addestramento, però, sono risultate di gran lunga
+maggiori rispetto alle LSTM classiche.
+Per migliorare i tempi di addestramento si è deciso di usare il metodo \texttt{mixed\_precision\_policy} di Keras
+con \texttt{mixed\_float16} come paramentro. Questo permette di usare
+la precisione a 16 bit per i pesi e le attivazioni
+e la precisione a 32 bit per i gradienti e le perdite riducendo i tempi di addestramento.
+Alla fine il modello ha impiegato circa 4 minuti ad epoca e circa 1 ora e 10 minuti per 22 epochs totali.
+
+\subsection{Test con BLSTM}
 I risultati sono stati molto simili a quelli delle LSTM come si può vedere nella \cref{fig:BLSTM results}.
 
 \begin{figure}[H]
