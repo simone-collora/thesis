@@ -806,10 +806,10 @@ che divide le stringhe in singoli caratteri. Essendo i domini delle semplici str
 spesso senza parole di senso compiuto e con caratteri speciali come il punto o il trattino,
 per questo progetto si è deciso di usare la character tokenization.
 Per fare ciò si è usato il metodo \texttt{Tokenizer} di Keras.
-Per questo modello si è deciso di usare
+Si è deciso di usare
 un modello sequenziale, in cui gli
 strati sono disposti in sequenza uno dopo l'altro. \hfil \break
-Il primo strato è uno strato di embedding che serve 
+Il primo è uno strato di embedding che serve 
 a convertire i caratteri in vettori numerici poiché,
 come detto in precedenza, le reti neurali
 possono leggere solo numeri. \hfil \break
@@ -822,22 +822,24 @@ presenti nel dataset. In generale con troppi neuroni si rischia di
 andare in overfitting e con pochi il contrario. Dopo
 vari tentativi, 128 neuroni è sembrata la scelta migliore poiché
 con più neuroni il modello non imparava, rimanendo bloccato con un accuracy di 0.5(50\%) circa. \hfil \break
-Dopo di che è stato aggiunto uno strato di dropout
+Dopo di che è stato aggiunto uno strato di dropout,
 ovvero uno strato che disabilita casualmente
 un certo numero di neuroni durante l'addestramento 
-per evitare l'overfitting. Anche il rate di dropout non
+per evitare l'overfitting, con un rate di 0.2. Anche il rate di dropout non
 è un valore fisso.
 Dopo è presente un altro strato LSTM come il primo e un dropout
 e uno strato con attivazione relu con 64 neuroni che serve
 a catturare pattern più complessi. Inizialmente
 si era provato senza questo strato ma 
-il modello aveva una precisione inferiore di circa il 5\%. Infine
+il modello aveva una precisione inferiore di circa il 5\% mentre con lo stesso
+strato con 128 neuroni il modello aveva la stessa precisione e F1-Score ma con tempi
+di addestramento maggiori. Infine
 l'ultimo è uno strato denso con attivazione sigmoide
 che serve a classificare i dati in due classi, DGA e non DGA.
 Per incrementare ulteriormente la precisione del modello,
-si è usato anche il metodo reduce\_lr\_on\_plateau di Keras.
+è stato utilizzato anche il metodo \texttt{ReduceLROnPlateau} di Keras.
 Questo metodo riduce il learning rate appena il modello non migliora più
-permettendo al modello di convergere meglio. Nel nostro caso
+permettendo una migliore convergenza \footnote{In ambito Machine Learning, un modello converge quando esso non può migliorare più di così anche con un ulteriore allenamento\cite{convergence}}. Nel nostro caso
 la patience, ovvero il numero di epoche prima di ridurre il learning rate,
 è stato impostato a 2 mentre il fattore di riduzione è 0.5.
 Per compilare il modello si è usato l'ottimizzatore Adam,
@@ -845,7 +847,7 @@ poiché è risultato il migliore in termini di velocità e precisione.
 Per il training sono state scelte inizialmente 5 e poi 10 epoch.
 Il modello però non riusciva a generalizzare, quindi si è deciso di aumentare
 il numero di epoche a 50 e di usare l'early stopping, un metodo per interrompere
-l'addestramento quando il modello non migliora più e per evitare l'overfitting. La patience in questo
+l'addestramento quando il modello non migliora più. La patience in questo
 caso è stata impostata a 3. Alla
 fine l'addestramento si è fermato all'epoch 26 impiegando circa 30 minuti e poco più di 1 minuto per epoca.
 
@@ -878,7 +880,7 @@ Questo permette al modello di catturare meglio
 i pattern nei dati.
 Come nelle LSTM aumentare o dimunire il numero di neuroni
 non ha avuto effetti positivi sul modello perciò si è deciso di usare anche qui
-128 neuroni per ogni strato BLSTM e uno denso con attivazione relu con 64 neuroni.
+128 neuroni per ogni strato BLSTM, gli strati di dropout, e uno denso con attivazione relu con 64 neuroni.
 Le epoche scelte sono anche qui 50 con early stopping con patience settata a 3.
 Le tempistiche di addestramento, però, sono risultate di gran lunga
 maggiori rispetto alle LSTM classiche.
@@ -908,7 +910,7 @@ La maggior parte degli errori sono False Negative anche qui
     \label{fig:BLSTM confusion matrix}
 \end{figure}
 
-\chapter{Conclusioni}
+\chapter{Conclusioni e sviluppi futuri}
 In questo progetto di tesi sono stati analizzati e sviluppati
 vari modelli di Machine Learning per il riconoscimento
 di domini generati da DGA.
