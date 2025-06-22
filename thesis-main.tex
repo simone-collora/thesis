@@ -455,8 +455,8 @@ all'overfitting.
 \end{figure}
 
 \noindent Il random forest risolve questo problema aumentando 
-l'accuratezza del modello sia in fase di training che in fase di testing. \cite{598994}
-Esso usa un apporccio basato su feature, ovvero vengono selezionate
+l'accuratezza del modello sia in fase di training che in fase di testing \cite{598994}.
+Esso usa un approccio basato su feature, ovvero vengono selezionate
 delle caratteristiche del dataset che possono essere utili per la classificazione.
 Ad esempio, nel nostro caso, le caratteristiche potrebbero essere
 il numero di vocali, lunghezza del dominio o l'entropia.
@@ -559,22 +559,23 @@ Per il dataset ho deciso di usare il dataset di YangYang \cite{dataset_yangyang}
 che contiene circa 1.5 milioni di domini DGA e circa 1.5 milioni di domini legittimi.
 
 \section{Linguaggi e librerie usate}
-Per il progetto è stato usato il linguaggio Python poiché è il più usato
+Per il progetto è stato usato il linguaggio Python\cite{python} poiché è il più usato
 in ambito Machine Learning e analisi dei dati e offre una vasta gamma di librerie
 adatte a questo scopo. Le librerie usate sono:
 \begin{itemize}
-    \item \textbf{Pandas}: libreria per la manipolazione e l'analisi dei dati.
-    \item \textbf{Numpy}: libreria per il calcolo scientifico e l'elaborazione di array.
-    \item \textbf{math}: libreria per le funzioni matematiche di base.
-    \item \textbf{Scikit-learn}: libreria per il Machine Learning che offre vari algoritmi
+    \item \textbf{Pandas} \cite{pandas}: libreria per la manipolazione e l'analisi dei dati.
+    \item \textbf{Numpy}\cite{numpy}: libreria per il calcolo scientifico e l'elaborazione di array.
+    \item \textbf{math}\cite{math}: libreria per le funzioni matematiche di base. Utilizzate per calcolare
+    l'entropia dei domini.
+    \item \textbf{Scikit-learn}\cite{scikit_learn}: libreria per il Machine Learning che offre vari algoritmi
     e strumenti per la valutazione dei modelli. Nel nostro caso è stata usata per 
     la divisione del dataset in training, validation e test set,
     per l'implementazione del modello Random Forest e per il calcolo delle metriche di valutazione.
-    \item \textbf{XGBoost}: libreria per l'implementazione dell'algoritmo XGBoost.
-    \item \textbf{Tensorflow e Keras}: librerie per la creazione di reti neurali. Un tempo erano due librerie
+    \item \textbf{XGBoost}\cite{xgboost_cl}: libreria per l'implementazione dell'algoritmo XGBoost.
+    \item \textbf{Tensorflow e Keras}\cite{Keras} \cite{tensorflow}: librerie per la creazione di reti neurali. Un tempo erano due librerie
     separate ma dal 2017 Keras è parte integrante di Tensorflow. 
     Usate per la tokenization dei domini e per l'implementazione delle LSTM e BLSTM.
-    \item \textbf{Matplotlib}: libreria per la visualizzazione dei dati e per la creazione di grafici.
+    \item \textbf{Matplotlib}\cite{matplotlib}: libreria per la visualizzazione dei dati e per la creazione di grafici.
 \end{itemize}
 
 \section{Metriche di valutazione}
@@ -629,7 +630,7 @@ quali classi sono state classificate correttamente e quali no e la quantità pre
 
 Il primo algoritmo testato è stato il Random Forest.
 Per implementarlo si è usata la classe \texttt{RandomForestClassifier} della libreria
-\texttt{scikit-learn} \cite{scikit_learn_rf}.
+\texttt{scikit-learn}.
 Qui non abbiamo bisogno di convertire i domini in
 altri formati poiché il modello prenderà
 come dati non il dominio in sé ma le sue caratteristiche(o features).
@@ -710,7 +711,7 @@ più di 5000 False Negative ovvero domini DGA classificati come legittimi rispet
 \section{Progettazione con XGBoost}
 XGBoost come Random Forest non ha bisogno dei dati convertiti in vettori numerici
 ma delle loro features.
-Per implementarlo si è usata l'omonima libreria \texttt{XGBoost} \cite{xgboost_cl}.
+Per implementarlo si è usata l'omonima libreria \texttt{XGBoost}.
 Le features usate sono state le stesse del modello Random Forest poiché,
 anche in questo caso, alcune features non davano miglioramenti o rischiavano
 di portare anche ad un overfitting del modello.
@@ -791,7 +792,7 @@ il 3\% in più di false negative rispetto ai false positive.
 \section{Progettazione LSTM}
 Poiché LSTM è adatto anche per il riconoscimento di pattern
 si è deciso di usarlo per il progetto sia nella sua forma classica che in quella bidirezionale.
-Per implementare le LSTM sia classiche che BLSTM si è usata la libreria \texttt{Keras} \cite{Keras}
+Per implementare le LSTM sia classiche che BLSTM si è usata la libreria \texttt{Keras}
 ora parte di Tensorflow
 e la sua classe \texttt{LSTM} per le LSTM classiche e \texttt{Bidirectional} per le BLSTM.
 A differenza dei modelli di Machine Learning precedenti,
@@ -825,7 +826,7 @@ con più neuroni il modello non imparava, rimanendo bloccato con un accuracy di 
 Dopo di che è stato aggiunto uno strato di dropout,
 ovvero uno strato che disabilita casualmente
 un certo numero di neuroni durante l'addestramento 
-per evitare l'overfitting, con un rate di 0.2. Anche il rate di dropout non
+per evitare l'overfitting, con un rate di 0.3. Anche il rate di dropout non
 è un valore fisso.
 Dopo è presente un altro strato LSTM come il primo e un dropout
 e uno strato con attivazione relu con 64 neuroni che serve
@@ -848,7 +849,9 @@ Per il training sono state scelte inizialmente 5 e poi 10 epoch.
 Il modello però non riusciva a generalizzare, quindi si è deciso di aumentare
 il numero di epoche a 50 e di usare l'early stopping, un metodo per interrompere
 l'addestramento quando il modello non migliora più. La patience in questo
-caso è stata impostata a 3. Alla
+caso è stata impostata a 3 con l'opzione \texttt{restore\_best\_weights}, ovvero, quando l'addestramento si interrompe,
+il modello ripristina i pesi del modello con i migliori risultati a seconda della metrica scelta(nel nostro caso la loss).
+. Alla
 fine l'addestramento si è fermato all'epoch 26 impiegando circa 30 minuti e poco più di 1 minuto per epoca.
 
 \subsection{Test con LSTM}
@@ -922,8 +925,18 @@ I modelli di Machine Learning basati su Feature Extraction, come il Random Fores
 hanno raggiunto un'accuratezza del 91\% e 93\% rispettivamente
 quindi dimostrandosi meno precisi ma allo stesso tempo
 più veloci nell'addestramento e nell'esecuzione.
-Il progetto ha dimostrato che le reti neurali ricorrenti
-sono adatte per il riconoscimento di pattern nei dati.
+Il progetto ha quindi dimostrato come le RNN e in particolare le LSTM e BLSTM
+sono particolarmente efficaci per il riconoscimento di pattern dei DGA. \hfill \break
+In futuro si potrebbe provare ad allenare i modelli su altri dataset,
+più grandi e con altre famiglie di DGA.
+Un'altra possibilità sarebbe quella di provare ad usare altri modelli
+sia di Machine Learning che di Deep Learning come Transformer, GRU e Bi-GRU o anche dei modelli
+misti ad esempio unendo LSTM e GRU o anche LSTM e Random Forest o XGBoost.
+Per quanto riguarda invece l'implementazione pratica del modello, si potrebbe provare a creare un sistema
+di rilevamento in tempo reale dei domini DGA che, tramite i DNS, analizza il dominio richiesto
+classificandolo prima della risoluzione.
+
+
 
 % \chapter{Contribution}
 
