@@ -39,7 +39,8 @@
 
 \begin{abstract}	
 %Max 2000 characters, strict.
-I Domain Generation Algorithms (DGA) sono algoritmi che generano domini in modo pseudo casuale.
+I Domain Generation Algorithms (DGA) sono algoritmi che generano un gran numero di
+di domini in modo pseudo casuale.
 Questi domini vengono utilizzati dai malware per comunicare con i loro server,
 i Command and Control servers (C\&C).
 I DGA sono stati sviluppati per superare le limitazioni
@@ -69,7 +70,7 @@ quelli basati su deep learning con un'accuretezza del 99\% e una differenza di a
 circa rispetto agli altri modelli,
 mentre, quelli più performanti in termini di tempo,
 sono stati quelli basati su feature extraction
-impiegando più di 30 volte in meno rispetto ai modelli di deep learning.
+impiegando più di 30 volte in meno per l'addestramento rispetto ai modelli di deep learning.
 \end{abstract}
 
 
@@ -146,7 +147,7 @@ che va da un minimo di un anno a un massimo di dieci anni.
 Un dominio può essere composto da lettere, numeri e trattini
 ma non può iniziare o finire con un trattino.
 Un dominio può essere composto da un massimo di 63 caratteri
-e non può contenere spazi o caratteri speciali e 
+e non può contenere spazi o caratteri speciali(fatta eccezione per il trattino) e
 può essere diviso in sottodomini, che sono
 parte del dominio principale e sono separati da un punto.
 Un esempio di sottodominio può essere \texttt{translate.google.com} in cui
@@ -243,7 +244,7 @@ del botnet. Ci sono tre tipi di server C\&C:
 
 \subsection{Domain Generation Algorithm}
 
-I Domain Generation Algorithm (DGA) sono algoritmi che generano migliaia di domini in modo pseudo casuale.
+I Domain Generation Algorithms (DGA) sono algoritmi che generano migliaia di domini in modo pseudo casuale.
 Prima viene scelto un seed, che può essere la data odierna
 o anche le previsioni meteo \cite{8621875} e, tramite
 un algoritmo di hashing, vengono generati i domini.
@@ -311,15 +312,15 @@ a seconda di come è strutturato il dataset possiamo avere vari tipi di allename
 \end{itemize}
 
 \noindent Si è soliti dividere il dataset in tre parti ovvero training set, validation set e test set.
-Il \textbf{training set} è il dataset su cui viene addestrato
+Il \textbf{training set} è la parte del dataset su cui viene addestrato
 il modello, il \textbf{validation set} è una parte del training set
 utile per riconoscere se il modello è in grado di generalizzare
 su dati nuovi ovvero non va in overfitting o underfitting durante l'addestramento.
-il \textbf{test set}, invece, è il dataset
+Il \textbf{test set}, invece, è la parte del dataset
 su cui viene testata la precisione del modello.
 Per la divisione del dataset non esiste una regola fissa,
 ma solitamente il training set è più grande del validation set
-e del test set. Un esempio potrebbe essere 90\% training set, 10\% validation set
+e del test set. Un esempio potrebbe essere 90\% training set, 10\%(del training set) validation set
 e 10\% test set.
 Successivamente vengono inizializzati i parametri del modello
 che per un modello classico come il Random Forest
@@ -334,7 +335,7 @@ troppo bene i dati e non generalizzare su dati nuovi
 (\textbf{Overfitting}).
 Dopo di che si passa alla fase vera e propria di addestramento.
 Per un modello classico dipende dal tipo di algoritmo usato.
-Per il random forest, ad esempio, viene creato un certo numero di alberi. ognuno con una parte casuale del training set
+Per il Random Forest, ad esempio, viene creato un certo numero di alberi. ognuno con una parte casuale del training set
 e viene calcolata la previsione di ogni albero.
 Il risultato sarà la maggioranza delle previsioni degli alberi o la media qualora si tratti di un problema di regressione.
 Per XGBoost, invece, viene creato un albero e
@@ -348,7 +349,7 @@ aggiorna i propri pesi. Ad esempio abbiamo un training set di 10000 dati
 e un batch size di 100. Ogni 100 dati il modello calcolerà
 l'output e la loss function, cioè la funzione che calcola
 la differenza tra l'output previsto e quello reale, e aggiornerà i pesi di conseguenza.
-Infine viene testato il modello sul test set e, se la precisione
+Infine viene testato il modello sul test set e, se la precisione, l'accuratezza o un'altra metrica scelta
 è soddisfacente, il modello potrà essere usato.
 \begin{figure}[H]
     \centering
@@ -398,7 +399,7 @@ A sua volta una rete neurale è composta da vari strati:
     il processo di apprendimento.
     Questo strato elabora gli input ricevuti dallo strato precedente
     modificando i pesi. Si possono avere anche più hidden layers
-    \item \textbf{Output Layer}: Questo è l'ultimo strato della rete neurale.
+    \item \textbf{Output Layer}: questo è l'ultimo strato della rete neurale.
     Fornisce i risultati finali ottenuti dalla rete neurale. Questo strato
     può essere composto anche da un solo neurone che fornisce
     un output binario (0 o 1) come sarà nel nostro caso(DGA o legit)
@@ -413,17 +414,19 @@ A sua volta una rete neurale è composta da vari strati:
 
 Abbiamo inoltre vari tipi di reti neurali:
 \begin{itemize}
-    \item \textbf{Reti Neurali Feedforward(FNN)}: Una rete Feedforward
+    \item \textbf{Reti Neurali Feedforward(FNN)}: una rete Feedforward
     elabora le informazioni in un solo verso. Non ha né cicli
     né memoria delle informazioni passate. Questo tipo di rete
-    è usato ad esempio per il riconoscimento di pattern.
+    è usato per problemi nei quali la memoria non è importante
+    come ad esempio l'Optical Character Recognition (OCR) ovvero il riconoscimento
+    di caratteri scritti a mano o stampati \cite{feedforwardneural}.
     \item \textbf{Reti Neurali Ricorrenti (RNN)}:
-    A differenza di una rete Feedforward, in una RNN 
+    a differenza di una rete Feedforward, in una RNN 
     i neuroni possono andare anche a formare dei cicli. 
     Questo permette alla rete di avere una specie di memoria
     e quindi di ricordare le informazioni passate. Usata
-    per esempio per traduzione automatica o riconoscimento vocale.
-    \item \textbf{Reti Neurali Convoluzionali (CNN)}: Questo tipo di rete
+    ad esempio per il riconoscimento vocale \cite{RNN}.
+    \item \textbf{Reti Neurali Convoluzionali (CNN)}: questo tipo di rete
     è usato principalmente per dati strutturati a griglia ad esempio le immagini.
     Il nome "Convoluzionali" deriva dal fatto che la
     rete usa un'operazione matematica chiamata proprio
@@ -461,7 +464,7 @@ delle caratteristiche del dataset che possono essere utili per la classificazion
 Ad esempio, nel nostro caso, le caratteristiche potrebbero essere
 il numero di vocali, lunghezza del dominio o l'entropia.
 L'algoritmo funziona nel seguente modo:
-Per prima cosa vengono creati $n$ alberi decisionali, ognuno
+per prima cosa vengono creati $n$ alberi decisionali, ognuno
 contenente una parte casuale del training set. Inoltre
 ogni albero decisionale viene addestrato su un sottoinsieme casuale
 di feature. Dopo di che, ogni albero fa la sua previsione,
@@ -555,7 +558,7 @@ direttamente dai dati.
 Il progetto ha come obiettivo quello di sviluppare un sistema
 di rilevamento di domini generati da DGA tramite
 l'uso di tecniche di Machine Learning. 
-Per il dataset ho deciso di usare il dataset di YangYang \cite{dataset_yangyang}
+Per il dataset si è deciso di usare il dataset di YangYang \cite{dataset_yangyang}
 che contiene circa 1.5 milioni di domini DGA e circa 1.5 milioni di domini legittimi.
 
 \section{Linguaggi e librerie usate}
