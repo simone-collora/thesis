@@ -99,7 +99,7 @@ una rete di computer infetti da malwares, chiamati Botnets, permettendo
 all'attaccante di eseguire codice malevolo da remoto.
 Il malware, però, deve conoscere un indirizzo IP o un dominio
 per contattare il server. L'attaccante potrebbe
-inserire in modo hard-coded l'indirizzo IP del server nel codice del malware,
+inserire in modo hard-coded l'indirizzo IP del server o il dominio collegato ad esso nel codice del malware,
 ma questo metodo è facilmente rilevabile e bloccabile.
 Gli hackers, quindi, preferiscono utilizzare dei domini
 generati in modo pseudo casuale da degli algoritmi per nascondere i loro server chiamati
@@ -146,7 +146,7 @@ Un esempio di sottodominio può essere \texttt{translate.google.com} in cui
 \texttt{translate} è il sottodominio di \texttt{google.com} per Google Translate.
 Quando un dominio è specificato in modo completo, includendo tutti i livelli gerarchici,
 si parla di \textbf{FQDN} (Fully Qualified Domain Name).
-Ad esempio \texttt{atlas.arc.nasa.gov} è il FQDN che porta all'host \texttt{128.102.128.50}\cite{rfc1594}.
+Ad esempio \texttt{atlas.arc.nasa.gov} è il FQDN che porta all'ip \texttt{128.102.128.50}\cite{rfc1594}.
 Un dominio può essere registrato da chiunque tramite
 un \textbf{registrar}, ovvero
 un'azienda che gestisce la registrazione dei domini.
@@ -160,7 +160,7 @@ Questo problema viene risolto dal Domain Name System. \hfill \break
 Il \textbf{Domain Name System} (più spesso abbreviato in DNS)
 è un protocollo che traduce i nomi di dominio in indirizzi IP.
 Prima del DNS, veniva usato HOST.TXT, un file mantenuto manualmente
-dallo Stanford Research Institute, che conteneva i nomi di dominio e gli indirizzi IP associati,
+dallo Stanford Research Institute, che conteneva i nomi di dominio e gli indirizzi IP associati ad essi,
 e veniva mandato via FTP(File Transfer Protocol) a tutti i computer connessi ad Arpanet, l'antenato di Internet \cite{dnshistory}.
 Questo però era un metodo statico con un solo punto di errore,
 ovvero se il file veniva corrotto o non aggiornato, i computer non erano più in grado di tradurre i nomi di dominio.
