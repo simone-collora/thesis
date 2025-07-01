@@ -39,23 +39,23 @@
 
 \begin{abstract}	
 %Max 2000 characters, strict.
-I Domain Generation Algorithms (DGA) sono algoritmi che generano un gran numero di
+I Domain Generation Algorithms (DGA) sono algoritmi che generano un gran numero
 di domini in modo pseudo casuale.
-Questi domini vengono utilizzati dai malware per comunicare con i loro server,
-i Command and Control servers (C\&C).
-I DGA sono stati sviluppati per superare le limitazioni
+I domini DGA vengono utilizzati principalmente per attività malevole come phishing e frodi online.
+Essi vengono usati per nascondere i server Command and Control(C\&C), ovvero dei server
+usati dagli hacker per comunicare con i computer infetti da malware,
+e sono stati sviluppati per superare le limitazioni
 dei metodi precedenti come i domini hard-coded, i quali
 sono prevedibili e facilmente bloccabili.
 I domini DGA, invece, sono quasi impossibili da prevedere e da bloccare con i metodi tradizionali,
-come le blacklist,
-poiché, i domini generati, sono migliaia e pseudo casuali.
+come le blacklist.
 Lo scopo di questo progetto di tesi è quello di analizzare
 e sviluppare soluzioni per la rilevazione dei domini DGA attraverso il Machine Learning, cercando
 di creare un modello in grado di rilevarli e distinguerli
 dai domini legit.
 Sono stati analizzati e sperimentati quattro algoritmi di Machine Learning
 per la rilevazione dei domini DGA, due algoritmi classici 
-basati su tecniche di feature extraction, ovvero le caratteristiche estratte dai dati(i domini nel nostro caso),
+basati su tecniche di feature extraction, ovvero le caratteristiche estratte dai dati,
 e due basati su tecniche di Deep Learning, che quindi impiegano delle
 reti neurali capaci di imparare direttamente dai dati.
 I due algoritmi di Machine Learning basati su feature extraction
@@ -66,11 +66,11 @@ DGA e legit diviso in training, validation e test set.
 I risultati sono basati su diverse metriche e
 sono stati confrontati tra i vari modelli.
 I modelli con risultati migliori sono stati
-quelli basati su deep learning con un'accuretezza del 99\% e una differenza di accuratezza del 7\%
+quelli basati su Deep Learning con un'accuretezza del 99\% e una differenza di accuratezza del 7\%
 circa rispetto agli altri modelli,
 mentre, quelli più performanti in termini di tempo,
 sono stati quelli basati su feature extraction
-impiegando più di 30 volte in meno per l'addestramento rispetto ai modelli di deep learning.
+impiegando più di 30 volte in meno per l'addestramento rispetto ai modelli di Deep Learning.
 \end{abstract}
 
 
@@ -94,8 +94,8 @@ i sistemi di protezione sono diventati sempre più sofisticati
 e potenti ma, allo stesso tempo, anche gli hackers 
 hanno sviluppato tecniche sempre più avanzate per eludere i sistemi di protezione.
 Tra queste vi è sicuramente l'uso di Botnets e
-dei Command and Control(C\&C) servers. I C\&C sono dei server che manipolano una rete
-di computer infetti da malwares, chiamati Botnets, permettendo
+dei Command and Control(C\&C) servers. I C\&C sono dei server utilizzati dagli hacker per manipolare
+una rete di computer infetti da malwares, chiamati Botnets, permettendo
 all'attaccante di eseguire codice malevolo da remoto.
 Il malware, però, deve conoscere un indirizzo IP o un dominio
 per contattare il server. L'attaccante potrebbe
@@ -110,7 +110,7 @@ rendendo difficile per i sistemi di protezione bloccarli
 poiché appena un dominio viene bloccato, il malware passa semplicemente al prossimo dominio generato.
 I metodi tradizionali per bloccare i domini malevoli come le blacklist,
 risultano inefficaci per i DGA poiché i domini generati sono troppi
-ed è molto difficile e dispendioso risalire al seed usato per generare i domini
+ed è molto difficile e dispendioso risalire all'algoritmo e al seed utilizzati per generare i domini
 tramite reverse engineering.
 Perciò, negli ultimi anni, sono stati sviluppati vari metodi di Machine Learning
 capaci di rilevare e bloccare i DGA in modo più efficace. \vfill
@@ -129,14 +129,24 @@ verranno discusse le conclusioni e i possibili sviluppi futuri.
 Di seguito sono descritti i concetti base su cui si basa il progetto.
 
 \section{Domini e Domain Name System}
-Un \textbf{dominio} è un nome univoco che identifica un sito web.
+Un \textbf{dominio} è un nome univoco che identifica una risorsa accessibile tramite internet, ad esempio un sito web o un server.
 I domini sono composti da due parti principali, il nome e l'estenzione del dominio.
-Il nome del dominio è la parte principale che identifica il sito web
+Il nome del dominio è la parte principale che identifica la risorsa,
 ad esempio \texttt{google} in \texttt{google.com}.
 L'estensione del dominio, invece, è la parte finale
 che identifica la provenienza del sito o lo scopo. Degli esempi possono essere
 \texttt{.com}, il più usato, per i siti commerciali,
 \texttt{.it} per i siti italiani, \texttt{.org} per le organizzazioni.
+Un dominio può essere composto da lettere, numeri e trattini
+ma non può iniziare o finire con un trattino.
+Un dominio può essere composto da un massimo di 63 caratteri
+e non può contenere spazi o caratteri speciali(fatta eccezione per il trattino) e
+può essere diviso in sottodomini, separati da un punto.
+Un esempio di sottodominio può essere \texttt{translate.google.com} in cui
+\texttt{translate} è il sottodominio di \texttt{google.com} per Google Translate.
+Quando un dominio è specificato in modo completo, includendo tutti i livelli gerarchici,
+si parla di \textbf{FQDN} (Fully Qualified Domain Name).
+Ad esempio \texttt{atlas.arc.nasa.gov} è il FQDN che porta all'host \texttt{128.102.128.50}\cite{rfc1594}.
 Un dominio può essere registrato da chiunque tramite
 un \textbf{registrar}, ovvero
 un'azienda che gestisce la registrazione dei domini.
@@ -144,23 +154,29 @@ Il dominio sarà unico e non potrà essere registrato da nessun altro
 fino a quando esso non verrà rimosso o scadrà.
 Un dominio può essere registrato per un periodo di tempo
 che va da un minimo di un anno a un massimo di dieci anni.
-Un dominio può essere composto da lettere, numeri e trattini
-ma non può iniziare o finire con un trattino.
-Un dominio può essere composto da un massimo di 63 caratteri
-e non può contenere spazi o caratteri speciali(fatta eccezione per il trattino) e
-può essere diviso in sottodomini, che sono
-parte del dominio principale e sono separati da un punto.
-Un esempio di sottodominio può essere \texttt{translate.google.com} in cui
-\texttt{translate} è il sottodominio di \texttt{google.com} per Google Translate.
-Il dominio solo però non basta per raggiungere un sito web.
-È necessario conoscere l'indirizzo IP
-del server che ospita il sito web. 
+Il dominio solo però non basta per raggiungere una risorsa.
+È necessario conoscere il suo indirizzo IP.
 Questo problema viene risolto dal Domain Name System. \hfill \break
-Il \textbf{Domain Name System} (più spesso abbreviato DNS)
-è un sistema che traduce i nomi di dominio in indirizzi IP.
-Quando un utente inserisce un dominio nel browser, il DNS
-cerca l'indirizzo IP associato a quel dominio
-e lo restituisce al browser che poi si connetterà al sito web desiderato. \raggedbottom
+Il \textbf{Domain Name System} (più spesso abbreviato in DNS)
+è un protocollo che traduce i nomi di dominio in indirizzi IP.
+Prima del DNS, veniva usato HOST.TXT, un file mantenuto manualmente
+dallo Stanford Research Institute, che conteneva i nomi di dominio e gli indirizzi IP associati,
+e veniva mandato via FTP(File Transfer Protocol) a tutti i computer connessi ad Arpanet, l'antenato di Internet \cite{dnshistory}.
+Questo però era un metodo statico con un solo punto di errore,
+ovvero se il file veniva corrotto o non aggiornato, i computer non erano più in grado di tradurre i nomi di dominio.
+Per risolvere questo problema, nel 1983 nasce il protocollo DNS,
+descritto per la prima volta nel RFC\footnote{RFC è l'acronimo per Request For Comments
+e sono dei documenti tecnici che descrivono standard, protocolli, procedure e concetti relativi a Internet e alle reti di computer.
+Essi sono numerati sequenzialmente dal numero 1 in poi e, qualora si dovesse fare una correzione, va pubblicato un altro RFC\cite{rfcmeaning}.}
+882 \cite{rfc882} e nel RFC 883 \cite{rfc883}
+Il DNS è dinamico e distribuito, ovvero non esiste un unico punto di errore,
+e i nomi di dominio vengono risolti da vari server DNS sparsi in tutto il mondo.
+Questo garantisce ridondanza, scalabilità e una maggiore affidabilità
+nella traduzione dei nomi di domini in indirizzi IP.
+Tutt'oggi il DNS è un protocollo fondamentale per il funzionamento di Internet.
+Ad esempio Flashstart DNS, un servizio di protezione DNS, gestisce 
+circa 15 miliardi di query DNS al giorno \cite{flashstartdns}.
+\raggedbottom
 
 \section{Botnets e DGA}
 \subsection{Botnets}
@@ -245,19 +261,22 @@ del botnet. Ci sono tre tipi di server C\&C:
 \subsection{Domain Generation Algorithm}
 
 I Domain Generation Algorithms (DGA) sono algoritmi che generano migliaia di domini in modo pseudo casuale.
-Prima viene scelto un seed, che può essere la data odierna
-o anche le previsioni meteo \cite{8621875} e, tramite
-un algoritmo di hashing, vengono generati i domini.
-Questi domini vengono poi utilizzati per contattare i server C\&C.
-Non tutti i domini generati però sono registrati.
-Il computer infetto, tramite i DNS locali, cercherà di tradurre
+I domini DGA sono usati principalmente per scopi malevoli come
+phishing e frodi online.
+Dopo aver sviluppato l'algoritmo, viene scelto un seed, che può essere la data odierna
+o anche le previsioni meteo \cite{8621875} e successivamente
+verranno generati i domini.
+I domini vengono registrati dall'hacker poco prima di lanciare l'attacco
+anche se non tutti i domini saranno registrati, sia per questione di costi
+che per evitare di essere bloccati preventivamente dai sistemi di protezione.
+Successivamente il botnet, tramite i DNS locali, cercherà di tradurre
 un dominio in un indirizzo IP.
 Se esso non riesce a contattare il server con un determinato dominio,
 proverà con il successivo finché non troverà
 un dominio valido che permetterà al malware di comunicare con
-il server C\&C \cite{8489147}.
+il server C\&C. Se un dominio DGA viene bloccato, il botnet passerà semplicemente al successivo \cite{8489147}.
 In questo modo, diventa più difficile per i sistemi di protezione
-rilevare e bloccare i loro attacchi.
+rilevare e bloccare questi attacchi.
 Si potrebbe pensare di bloccare direttamente i domini tramite
 una blacklist ma questo metodo
 risulta inefficace poiché vengono generati migliaia di domini
@@ -266,7 +285,7 @@ che utilizza DGA, è in grado di generare
 fino a 50.000 domini pseudo casuali al giorno \cite{978131}.
 Un altro modo per contrastare ciò
 potrebbe essere quello di fare reverse engineering
-del DGA per capire quale seed viene utilizzato per generare i domini.
+del DGA per capire il funzionamento dell'algoritmo e quale seed viene utilizzato per generare i domini.
 Questo però risulta lento e dispendioso e possibilmente inefficace \cite{8887881}.
 
 \begin{figure}[H]
@@ -966,17 +985,17 @@ classificandolo prima della risoluzione.
 
 \chapter*{Ringraziamenti}
 \markboth{RINGRAZIAMENTI}{RINGRAZIAMENTI}
-Con questo lavoro di tesi, si conclude il mio percorso di studi
+Con questo lavoro di tesi, si conclude il mio percorso di studi,
 sicuramente non facile ma che mi ha dato la possibilità di crescere sia
 a livello personale che professionale.  \hfill \break
-Ringrazio il mio relatore, il Prof. Mirko Viroli per essere stato sempre disponibile e avermi aiutato con il lavoro
-e Lorenzo Magi e tutta Flashstart per l'aiuto dato e per avermi dato la possibilità di lavorare su questo progetto.  \hfill \break
+Ringrazio il mio relatore, il Prof. Mirko Viroli per essere stato sempre disponibile e avermi aiutato con il lavoro,
+Francesco Collini, Lorenzo Magi e tutta Flashstart per l'aiuto dato e per avermi dato la possibilità di lavorare su questo progetto.  \hfill \break
 Ringrazio la mia famiglia per avermi sempre supportato sia moralmente che economicamente. Senza
 di loro non sarei mai riuscito a raggiungere questo traguardo.  \hfill \break
 Ringrazio i miei amici in particolare l'associazione Sprite che hanno
 reso questo percorso più divertente.
 Ringrazio i bloccati e gli amici di Smash Bros per i momenti di divertimento e avermi dato un hobby per
-staccare dallo studio.
+staccare dallo studio ogni tanto.
 
 
 \end{document}
